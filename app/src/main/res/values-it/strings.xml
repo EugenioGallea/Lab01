@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MAD Laboratorio 1</string>
+    <string name="show_profile">Mostra Profilo</string>
+    <string name="edit_profile">Modifica Profilo</string>
+
+    <string name="lent_books">Libri prestati</string>
+    <string name="borrowed_books">Libri ricevuti</string>
+    <string name="to_be_returned">Da restituire</string>
+
+</resources>

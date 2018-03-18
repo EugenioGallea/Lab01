@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">MAD Laboratory 1</string>
+    <string name="show_profile">Show Profile</string>
+    <string name="edit_profile">Edit Profile</string>
+
+    <string name="lent_books">Lent books</string>
+    <string name="borrowed_books">Borrowed books</string>
+    <string name="to_be_returned">To be returned</string>
+
+    <string name="lorem_ipsum_250">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut non mauris vitae ante sollicitudin luctus. In hac habitasse platea dictumst. Nullam rhoncus, nulla et sodales tempor, ligula libero fermentum erat, ut tempor elit metus sed urna. Ut posuere. </string>
+</resources>
