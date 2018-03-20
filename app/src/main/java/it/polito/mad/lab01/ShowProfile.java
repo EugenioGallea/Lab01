@@ -52,15 +52,10 @@ public class ShowProfile extends AppCompatActivity {
         });
 
         pi = ProfileInfo.getInstance();
-    }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        Context context = this;
-        SharedPreferences sharedPref = context.getSharedPreferences(
-                getString(R.string.preference_file), Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
 
+        Log.v("ON CREATE 1", sharedPref.getString(getString(R.string.preference_username), "Default Username"));
 
         AppCompatTextView username = (AppCompatTextView) findViewById(R.id.sp_username);
         AppCompatTextView location = (AppCompatTextView) findViewById(R.id.sp_location);
@@ -106,6 +101,8 @@ public class ShowProfile extends AppCompatActivity {
         editor.putString(getString(R.string.preference_username), pi.getUsername());
         editor.putString(getString(R.string.preference_location), pi.getLocation());
         editor.putString(getString(R.string.preference_description), pi.getDescription());
+
+        editor.commit();
     }
 
     @Override
@@ -131,22 +128,6 @@ public class ShowProfile extends AppCompatActivity {
     }
 
     @Override
-    protected void onResume() {
-        AppCompatTextView username = (AppCompatTextView) findViewById(R.id.sp_username);
-        AppCompatTextView location = (AppCompatTextView) findViewById(R.id.sp_location);
-        AppCompatTextView description = (AppCompatTextView) findViewById(R.id.sp_description);
-
-        // Set back the textview
-        username.setText(pi.getUsername());
-        location.setText(pi.getLocation());
-        description.setText(pi.getDescription());
-
-        Log.v("ON RESUME", pi.getUsername());
-
-        super.onResume();
-    }
-
-    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
@@ -167,7 +148,6 @@ public class ShowProfile extends AppCompatActivity {
                     description.setText(pi.getDescription());
                 }
 
-                Log.v("ON RESULT", pi.getUsername());
                 break;
 
             default:
