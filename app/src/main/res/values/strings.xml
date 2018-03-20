@@ -8,4 +8,14 @@
     <string name="to_be_returned">To be returned</string>
 
     <string name="lorem_ipsum_250">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut non mauris vitae ante sollicitudin luctus. In hac habitasse platea dictumst. Nullam rhoncus, nulla et sodales tempor, ligula libero fermentum erat, ut tempor elit metus sed urna. Ut posuere. </string>
+    <string name="save_profile">Save Profile</string>
+    <string name="hint_email">Email</string>
+    <string name="hint_username">Username</string>
+    <string name="hint_description">Description</string>
+    <string name="hint_location">Location</string>
+    <string name="preference_file">PreferenceFileKey</string>
+    <string name="preference_email">SavedEmail</string>
+    <string name="preference_username">SavedUsername</string>
+    <string name="preference_location">SavedLocation</string>
+    <string name="preference_description">SavedDescription</string>
 </resources>

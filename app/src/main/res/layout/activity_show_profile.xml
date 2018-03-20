@@ -19,10 +19,9 @@
             app:popupTheme="@style/ThemeOverlay.AppCompat.Dark" />
 
         <android.support.v7.widget.AppCompatImageButton
-            android:id="@+id/sp_profile_photo"
+            android:id="@+id/sp_profile_picture"
             android:layout_width="match_parent"
             android:layout_height="200dp"
-            android:scaleType="centerCrop"
             android:src="@drawable/header" />
 
         <LinearLayout
@@ -33,17 +32,24 @@
             android:paddingBottom="10dp"
             android:paddingTop="5dp">
 
+            <View
+                android:layout_width="28dp"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"/>
+
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"
                 android:layout_weight="1"
                 android:orientation="vertical"
                 android:paddingBottom="10dp"
                 android:paddingTop="10dp">
 
                 <android.support.v7.widget.AppCompatTextView
-                    android:id="@+id/sp_profile_name"
+                    android:id="@+id/sp_username"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="NoFandroid"
@@ -53,7 +59,7 @@
                     android:textStyle="bold" />
 
                 <android.support.v7.widget.AppCompatTextView
-                    android:id="@+id/sp_profile_city"
+                    android:id="@+id/sp_location"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
@@ -87,6 +93,23 @@
                     android:tint="@color/colorAccentDark" />
             </LinearLayout>
         </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.3dp"
+            android:background="@color/colorAccent" />
+
+        <RatingBar
+            android:id="@+id/sp_rating_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:paddingTop="5dp"
+            android:numStars="5"
+            android:scaleX=".75"
+            android:scaleY=".75"
+            android:stepSize="0.5"
+            android:isIndicator="true" />
 
         <View
             android:layout_width="match_parent"
@@ -198,6 +221,7 @@
             android:background="@color/colorAccent" />
 
         <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/sp_description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="16dp"

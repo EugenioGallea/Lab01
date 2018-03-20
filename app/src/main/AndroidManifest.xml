@@ -10,7 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name="it.polito.mad.lab01.ShowProfile"
+            android:name=".ShowProfile"
             android:label="@string/show_profile">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -18,6 +18,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".EditProfile"
+                    android:label="@string/edit_profile"></activity>
     </application>
 
 </manifest>
