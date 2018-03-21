@@ -1,5 +1,10 @@
 package it.polito.mad.lab01;
 
+import android.provider.ContactsContract;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 /**
  * Created by eugeniogallea on 20/03/18.
  */
@@ -9,6 +14,15 @@ public class ProfileInfo {
     private static String username = null;
     private static String location = null;
     private static String description = null;
+    private static String path_pp = null;
+
+    public static String getPath_pp() {
+        return path_pp;
+    }
+
+    public static void setPath_pp(String path_pp) {
+        ProfileInfo.path_pp = path_pp;
+    }
 
     private static final ProfileInfo instance = new ProfileInfo();
 

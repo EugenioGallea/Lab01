@@ -3,6 +3,8 @@ package it.polito.mad.lab01;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -13,6 +15,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
+import android.widget.ImageView;
 
 public class ShowProfile extends AppCompatActivity {
 
@@ -55,8 +58,6 @@ public class ShowProfile extends AppCompatActivity {
 
         SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
 
-        Log.v("ON CREATE 1", sharedPref.getString(getString(R.string.preference_username), "Default Username"));
-
         AppCompatTextView username = (AppCompatTextView) findViewById(R.id.sp_username);
         AppCompatTextView location = (AppCompatTextView) findViewById(R.id.sp_location);
         AppCompatTextView description = (AppCompatTextView) findViewById(R.id.sp_description);
@@ -65,6 +66,7 @@ public class ShowProfile extends AppCompatActivity {
         username.setText(sharedPref.getString(getString(R.string.preference_username), "Default Username"));
         location.setText(sharedPref.getString(getString(R.string.preference_location), "Default Location"));
         description.setText(sharedPref.getString(getString(R.string.preference_description), "Default Description"));
+
 
         pi.setEmail(email);
         pi.setUsername(username.getText().toString());
@@ -114,6 +116,12 @@ public class ShowProfile extends AppCompatActivity {
         pi.setUsername(savedInstanceState.getString("username"));
         pi.setLocation(savedInstanceState.getString("location"));
         pi.setDescription(savedInstanceState.getString("description"));
+
+        if(!(pi.getPath_pp() == null)){
+            Bitmap image = BitmapFactory.decodeFile(pi.getPath_pp());
+            ImageView imageview = findViewById(R.id.sp_profile_picture);
+            imageview.setImageBitmap(image);
+        }
     }
 
     @Override
@@ -125,6 +133,7 @@ public class ShowProfile extends AppCompatActivity {
         outState.putString("username", pi.getUsername());
         outState.putString("location", pi.getLocation());
         outState.putString("description", pi.getDescription());
+        outState.putString("path_pp", pi.getPath_pp());
     }
 
     @Override
@@ -136,6 +145,7 @@ public class ShowProfile extends AppCompatActivity {
                 AppCompatTextView username = (AppCompatTextView) findViewById(R.id.sp_username);
                 AppCompatTextView location = (AppCompatTextView) findViewById(R.id.sp_location);
                 AppCompatTextView description = (AppCompatTextView) findViewById(R.id.sp_description);
+                ImageView imageview = (ImageView) findViewById(R.id.sp_profile_picture);
 
                 if(resultCode == RESULT_OK) {
                     pi.setUsername(data.getStringExtra("username"));
@@ -146,6 +156,11 @@ public class ShowProfile extends AppCompatActivity {
                     username.setText(pi.getUsername());
                     location.setText(pi.getLocation());
                     description.setText(pi.getDescription());
+
+                    if(!(pi.getPath_pp() == null)){
+                        Bitmap image = BitmapFactory.decodeFile(data.getStringExtra("path_pp"));
+                        imageview.setImageBitmap(image);
+                    }
                 }
 
                 break;
