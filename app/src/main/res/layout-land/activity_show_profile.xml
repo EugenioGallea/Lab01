@@ -19,7 +19,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <android.support.v7.widget.AppCompatImageButton
+        <ImageView
             android:id="@+id/sp_profile_picture"
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -56,7 +56,7 @@
                         android:paddingBottom="10dp"
                         android:paddingTop="10dp">
 
-                        <android.support.v7.widget.AppCompatTextView
+                        <TextView
                             android:id="@+id/sp_username"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -66,7 +66,7 @@
                             android:textSize="24sp"
                             android:textStyle="bold" />
 
-                        <android.support.v7.widget.AppCompatTextView
+                        <TextView
                             android:id="@+id/sp_location"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -85,7 +85,7 @@
                         android:layout_marginRight="16dp"
                         android:orientation="vertical">
 
-                        <android.support.v7.widget.AppCompatImageButton
+                        <ImageButton
                             android:id="@+id/sp_mail_icon"
                             android:layout_width="28dp"
                             android:layout_height="28dp"
@@ -93,7 +93,7 @@
                             android:src="@drawable/ic_email_black_32dp"
                             android:tint="@color/colorAccentDark" />
 
-                        <android.support.v7.widget.AppCompatImageButton
+                        <ImageButton
                             android:id="@+id/sp_locate_icon"
                             android:layout_width="28dp"
                             android:layout_height="28dp"
@@ -138,7 +138,7 @@
                         android:layout_weight="1"
                         android:orientation="vertical">
 
-                        <android.support.v7.widget.AppCompatTextView
+                        <TextView
                             android:id="@+id/sp_lent_books_number"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -148,7 +148,7 @@
                             android:textSize="18sp"
                             android:textStyle="bold" />
 
-                        <android.support.v7.widget.AppCompatTextView
+                        <TextView
                             android:id="@+id/sp_lent_books_text"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
@@ -170,7 +170,7 @@
                         android:layout_weight="1"
                         android:orientation="vertical">
 
-                        <android.support.v7.widget.AppCompatTextView
+                        <TextView
                             android:id="@+id/sp_borrowed_books_number"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -180,7 +180,7 @@
                             android:textSize="18sp"
                             android:textStyle="bold" />
 
-                        <android.support.v7.widget.AppCompatTextView
+                        <TextView
                             android:id="@+id/sp_borrowed_books_text"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
@@ -202,7 +202,7 @@
                         android:layout_weight="1"
                         android:orientation="vertical">
 
-                        <android.support.v7.widget.AppCompatTextView
+                        <TextView
                             android:id="@+id/sp_to_be_returned_number"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -212,7 +212,7 @@
                             android:textSize="18sp"
                             android:textStyle="bold" />
 
-                        <android.support.v7.widget.AppCompatTextView
+                        <TextView
                             android:id="@+id/sp_to_be_returned_text"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
@@ -228,7 +228,7 @@
                     android:layout_height="0.3dp"
                     android:background="@color/colorAccent" />
 
-                <android.support.v7.widget.AppCompatTextView
+                <TextView
                     android:id="@+id/sp_description"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

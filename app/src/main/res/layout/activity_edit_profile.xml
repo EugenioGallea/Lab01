@@ -41,7 +41,7 @@
                 app:layout_behavior="@string/appbar_scrolling_view_behavior"
                 tools:showIn="@layout/activity_edit_profile">
 
-                <android.support.v7.widget.AppCompatImageButton
+                <ImageView
                     android:id="@+id/ep_profile_picture"
                     android:layout_width="match_parent"
                     android:layout_height="200dp"
@@ -83,7 +83,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="@string/hint_email"
-                        android:inputType="textEmailAddress" />
+                        android:inputType="textEmailAddress"/>
 
                     </android.support.design.widget.TextInputLayout>
                 </LinearLayout>
@@ -91,7 +91,8 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:focusedByDefault="true">
 
                     <ImageView
                         android:layout_width="wrap_content"

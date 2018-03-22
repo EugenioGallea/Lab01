@@ -41,7 +41,7 @@
                 app:layout_behavior="@string/appbar_scrolling_view_behavior"
                 tools:showIn="@layout/activity_edit_profile">
 
-                <android.support.v7.widget.AppCompatImageButton
+                <ImageView
                     android:id="@+id/sp_profile_picture"
                     android:layout_width="match_parent"
                     android:layout_height="200dp"

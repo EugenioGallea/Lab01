@@ -62,10 +62,17 @@ public class EditProfile extends AppCompatActivity {
 
             camera.setOnClickListener(r -> {
                 Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                Log.v("CAMERA", "Camera cliccata");
                 if (cameraIntent.resolveActivity(getPackageManager()) != null) {
-                    File photoDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-                    File image = new File(photoDir.getAbsolutePath(), "profile_picture.jpg");
-                    startActivityForResult(cameraIntent, CAMERA);
+                    String fileName = "profile_picture";
+                    File image = new File(this.getApplicationContext().getFilesDir(), fileName);
+
+                    if(image != null){
+                        Uri imageUri = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID.concat(".fileprovider"), image);
+                        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+                        Log.v("CAMERA", "Uri immagine = " + imageUri.toString());
+                        startActivityForResult(cameraIntent, CAMERA);
+                    }
                 }
 
                 bsd.dismiss();
@@ -183,16 +190,20 @@ public class EditProfile extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         ImageView imageview = (ImageView) findViewById(R.id.ep_profile_picture);
-
         switch (requestCode) {
             case CAMERA:
                 if (data != null) {
-                    Bitmap bitmap_camera = (Bitmap) data.getExtras().get("data");
-                    if (bitmap_camera == null)
-                        break;
-                    String path = saveImage(bitmap_camera);
-                    imageview.setImageBitmap(bitmap_camera);
-                    pi.setPath_pp(path);
+                    Uri contentURI = (Uri) data.getExtras().get(MediaStore.EXTRA_OUTPUT);
+                    try {
+                        Bitmap bitmap_camera = MediaStore.Images.Media.getBitmap(this.getContentResolver(), contentURI);
+                        if (bitmap_camera == null)
+                            break;
+                        //String path = saveImage(bitmap_camera);
+                        imageview.setImageBitmap(bitmap_camera);
+                        //pi.setPath_pp(path);
+                    } catch (IOException e) {
+                        throw( new RuntimeException(e));
+                    }
                 }
 
                 break;
@@ -208,7 +219,7 @@ public class EditProfile extends AppCompatActivity {
                         imageview.setImageBitmap(bitmap_gallery);
                         pi.setPath_pp(path);
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        throw( new RuntimeException(e));
                     }
                 }
                 break;
