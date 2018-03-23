@@ -42,7 +42,7 @@
                 tools:showIn="@layout/activity_edit_profile">
 
                 <ImageView
-                    android:id="@+id/sp_profile_picture"
+                    android:id="@+id/ep_profile_picture"
                     android:layout_width="match_parent"
                     android:layout_height="200dp"
                     android:src="@drawable/header" />

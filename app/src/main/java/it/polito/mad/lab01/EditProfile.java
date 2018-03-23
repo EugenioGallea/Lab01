@@ -6,15 +6,12 @@ import android.graphics.BitmapFactory;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Environment;
-import android.provider.ContactsContract;
 import android.provider.MediaStore;
-import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -23,17 +20,15 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Paths;
-import java.util.Calendar;
 
 public class EditProfile extends AppCompatActivity {
     private EditText email, username, location, description;
+    private ImageView image;
     private ProfileInfo pi = null;
     private static final int CAMERA = 2;
     private static final int GALLERY = 3;
@@ -62,15 +57,14 @@ public class EditProfile extends AppCompatActivity {
 
             camera.setOnClickListener(r -> {
                 Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                Log.v("CAMERA", "Camera cliccata");
                 if (cameraIntent.resolveActivity(getPackageManager()) != null) {
-                    String fileName = "profile_picture";
-                    File image = new File(this.getApplicationContext().getFilesDir(), fileName);
+                    String fileName = "profile_pic";
+                    File imageFile = new File(this.getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES), fileName);
 
-                    if(image != null){
-                        Uri imageUri = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID.concat(".fileprovider"), image);
+                    if(imageFile != null){
+                        Uri imageUri = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID.concat(".fileprovider"), imageFile);
+                        pi.setImageUri(imageUri);
                         cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-                        Log.v("CAMERA", "Uri immagine = " + imageUri.toString());
                         startActivityForResult(cameraIntent, CAMERA);
                     }
                 }
@@ -101,11 +95,17 @@ public class EditProfile extends AppCompatActivity {
         username = (EditText) findViewById(R.id.ep_input_username);
         location = (EditText) findViewById(R.id.ep_input_location);
         description = (EditText) findViewById(R.id.ep_input_description);
+        image = (ImageView) findViewById(R.id.ep_profile_picture);
 
         email.setText(pi.getEmail());
         username.setText(pi.getUsername());
         location.setText(pi.getLocation());
         description.setText(pi.getDescription());
+
+        Uri imageUri = pi.getImageUri();
+        if(imageUri != null) {
+            image.setImageURI(imageUri);
+        }
     }
 
     @Override
@@ -144,7 +144,8 @@ public class EditProfile extends AppCompatActivity {
         outState.putString("username", pi.getUsername());
         outState.putString("location", pi.getLocation());
         outState.putString("description", pi.getDescription());
-        outState.putString("path_pp", pi.getPath_pp());
+        if(pi.getImageUri() != null)
+            outState.putString("imageUri", pi.getImageUri().toString());
     }
 
     @Override
@@ -156,11 +157,12 @@ public class EditProfile extends AppCompatActivity {
         pi.setUsername(savedInstanceState.getString("username"));
         pi.setLocation(savedInstanceState.getString("location"));
         pi.setDescription(savedInstanceState.getString("description"));
+        pi.setImageUri(Uri.parse(savedInstanceState.getString("imageUri")));
 
-        if(!(pi.getPath_pp() == null)){
-            Bitmap image = BitmapFactory.decodeFile(pi.getPath_pp());
+        if(pi.getImageUri() != null){
+            Log.v("RESTORING", savedInstanceState.getString("imageUri"));
             ImageView imageview = findViewById(R.id.ep_profile_picture);
-            imageview.setImageBitmap(image);
+            imageview.setImageURI(pi.getImageUri());
         }
     }
 
@@ -179,7 +181,7 @@ public class EditProfile extends AppCompatActivity {
         intent.putExtra("username", u.getText().toString());
         intent.putExtra("location", l.getText().toString());
         intent.putExtra("description", d.getText().toString());
-        intent.putExtra("path_pp", pi.getPath_pp());
+        intent.putExtra("imageUri", pi.getImageUri().toString());
 
         setResult(RESULT_OK, intent);
 
@@ -189,75 +191,26 @@ public class EditProfile extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        Log.v("ON ACTIVITY RES", "Sono entrato da: " + requestCode);
         ImageView imageview = (ImageView) findViewById(R.id.ep_profile_picture);
-        switch (requestCode) {
-            case CAMERA:
-                if (data != null) {
-                    Uri contentURI = (Uri) data.getExtras().get(MediaStore.EXTRA_OUTPUT);
-                    try {
-                        Bitmap bitmap_camera = MediaStore.Images.Media.getBitmap(this.getContentResolver(), contentURI);
-                        if (bitmap_camera == null)
-                            break;
-                        //String path = saveImage(bitmap_camera);
-                        imageview.setImageBitmap(bitmap_camera);
-                        //pi.setPath_pp(path);
-                    } catch (IOException e) {
-                        throw( new RuntimeException(e));
+        if(resultCode == RESULT_OK) {
+            switch (requestCode) {
+                case CAMERA:
+                    imageview.setImageURI(pi.getImageUri());
+
+                    break;
+
+                case GALLERY:
+                    if (data != null) {
+                        pi.setImageUri(data.getData());
+                        imageview.setImageURI(pi.getImageUri());
                     }
-                }
+                    break;
 
-                break;
+                default:
+                    break;
 
-            case GALLERY:
-                if (data != null) {
-                    Uri contentURI = data.getData();
-                    try {
-                        Bitmap bitmap_gallery = MediaStore.Images.Media.getBitmap(this.getContentResolver(), contentURI);
-                        if(bitmap_gallery == null)
-                            break;
-                        String path = saveImage(bitmap_gallery);
-                        imageview.setImageBitmap(bitmap_gallery);
-                        pi.setPath_pp(path);
-                    } catch (IOException e) {
-                        throw( new RuntimeException(e));
-                    }
-                }
-                break;
-
-            default:
-                break;
-
+            }
         }
     }
-
-    public String saveImage(Bitmap myBitmap) {
-        String path = "/img";
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        myBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-        File wallpaperDirectory = new File(
-                path);
-
-        // have the object build the directory structure, if needed.
-        if (!wallpaperDirectory.exists()) {
-            wallpaperDirectory.mkdirs();
-        }
-
-        try {
-            File f = new File(wallpaperDirectory, "/img" + ".jpg");
-            f.createNewFile();
-            FileOutputStream fo = new FileOutputStream(f);
-            fo.write(bytes.toByteArray());
-            MediaScannerConnection.scanFile(this,
-                    new String[]{f.getPath()},
-                    new String[]{"image/jpeg"}, null);
-            fo.close();
-            Log.d("TAG", "File Saved::--->" + f.getAbsolutePath());
-
-            return f.getAbsolutePath();
-        } catch (IOException e1) {
-            e1.printStackTrace();
-        }
-        return null;
-    }
-
 }

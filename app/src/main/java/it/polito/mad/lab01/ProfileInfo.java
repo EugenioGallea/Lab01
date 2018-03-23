@@ -1,9 +1,6 @@
 package it.polito.mad.lab01;
 
-import android.provider.ContactsContract;
-
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import android.net.Uri;
 
 /**
  * Created by eugeniogallea on 20/03/18.
@@ -14,14 +11,14 @@ public class ProfileInfo {
     private static String username = null;
     private static String location = null;
     private static String description = null;
-    private static String path_pp = null;
+    private Uri imageUri = null ;
 
-    public static String getPath_pp() {
-        return path_pp;
+    public Uri getImageUri() {
+        return imageUri;
     }
 
-    public static void setPath_pp(String path_pp) {
-        ProfileInfo.path_pp = path_pp;
+    public void setImageUri(Uri imageUri) {
+        this.imageUri = imageUri;
     }
 
     private static final ProfileInfo instance = new ProfileInfo();

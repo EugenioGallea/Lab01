@@ -18,7 +18,7 @@
     <string name="preference_username">SavedUsername</string>
     <string name="preference_location">SavedLocation</string>
     <string name="preference_description">SavedDescription</string>
+    <string name="preference_imageUri">SavedImageUri</string>
     <string name="camera_option">Take picture from camera</string>
     <string name="gallery_option">Choose picture from gallery</string>
-    <string name="preference_path_profile_picture">SavedPathProfilePicture</string>
 </resources>

@@ -17,6 +17,8 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import java.io.File;
+
 public class ShowProfile extends AppCompatActivity {
 
     // Just temp data
@@ -61,17 +63,26 @@ public class ShowProfile extends AppCompatActivity {
         AppCompatTextView username = (AppCompatTextView) findViewById(R.id.sp_username);
         AppCompatTextView location = (AppCompatTextView) findViewById(R.id.sp_location);
         AppCompatTextView description = (AppCompatTextView) findViewById(R.id.sp_description);
+        ImageView image = (ImageView) findViewById(R.id.sp_profile_picture);
 
         String email = sharedPref.getString(getString(R.string.preference_email), "email@default.com");
         username.setText(sharedPref.getString(getString(R.string.preference_username), "Default Username"));
         location.setText(sharedPref.getString(getString(R.string.preference_location), "Default Location"));
         description.setText(sharedPref.getString(getString(R.string.preference_description), "Default Description"));
 
+        String imageUriString = sharedPref.getString(getString(R.string.preference_imageUri), null);
+        Uri imageUri = null;
+        if(imageUriString != null) {
+            imageUri = Uri.parse(imageUriString);
+            image.setImageURI(imageUri);
+        }
+
 
         pi.setEmail(email);
         pi.setUsername(username.getText().toString());
         pi.setLocation(location.getText().toString());
         pi.setDescription(description.getText().toString());
+        pi.setImageUri(imageUri);
     }
 
     @Override
@@ -103,6 +114,8 @@ public class ShowProfile extends AppCompatActivity {
         editor.putString(getString(R.string.preference_username), pi.getUsername());
         editor.putString(getString(R.string.preference_location), pi.getLocation());
         editor.putString(getString(R.string.preference_description), pi.getDescription());
+        if(pi.getImageUri() != null)
+            editor.putString(getString(R.string.preference_imageUri), pi.getImageUri().toString());
 
         editor.commit();
     }
@@ -116,11 +129,11 @@ public class ShowProfile extends AppCompatActivity {
         pi.setUsername(savedInstanceState.getString("username"));
         pi.setLocation(savedInstanceState.getString("location"));
         pi.setDescription(savedInstanceState.getString("description"));
+        pi.setImageUri(Uri.parse(savedInstanceState.getString("imageUri")));
 
-        if(!(pi.getPath_pp() == null)){
-            Bitmap image = BitmapFactory.decodeFile(pi.getPath_pp());
+        if(pi.getImageUri() != null){
             ImageView imageview = findViewById(R.id.sp_profile_picture);
-            imageview.setImageBitmap(image);
+            imageview.setImageURI(pi.getImageUri());
         }
     }
 
@@ -133,7 +146,8 @@ public class ShowProfile extends AppCompatActivity {
         outState.putString("username", pi.getUsername());
         outState.putString("location", pi.getLocation());
         outState.putString("description", pi.getDescription());
-        outState.putString("path_pp", pi.getPath_pp());
+        if(pi.getImageUri() != null)
+            outState.putString("imageUri", pi.getImageUri().toString());
     }
 
     @Override
@@ -151,16 +165,15 @@ public class ShowProfile extends AppCompatActivity {
                     pi.setUsername(data.getStringExtra("username"));
                     pi.setLocation(data.getStringExtra("location"));
                     pi.setDescription(data.getStringExtra("description"));
+                    pi.setImageUri(Uri.parse(data.getStringExtra("imageUri")));
 
                     // Set back the textview
                     username.setText(pi.getUsername());
                     location.setText(pi.getLocation());
                     description.setText(pi.getDescription());
 
-                    if(!(pi.getPath_pp() == null)){
-                        Bitmap image = BitmapFactory.decodeFile(data.getStringExtra("path_pp"));
-                        imageview.setImageBitmap(image);
-                    }
+                    if(pi.getImageUri() != null)
+                        imageview.setImageURI(pi.getImageUri());
                 }
 
                 break;
