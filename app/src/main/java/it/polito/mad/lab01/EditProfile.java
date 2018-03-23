@@ -1,14 +1,19 @@
 package it.polito.mad.lab01;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -29,9 +34,13 @@ import java.io.IOException;
 public class EditProfile extends AppCompatActivity {
     private EditText email, username, location, description;
     private ImageView image;
+    private Uri imageUri;
     private ProfileInfo pi = null;
+    //private BottomSheetDialog bsd = null;
     private static final int CAMERA = 2;
     private static final int GALLERY = 3;
+    private static final int PERMISSIONS_REQUEST_CAMERA = 4;
+    private static final int PERMISSIONS_REQUEST_EXTERNAL_STORAGE = 5;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,37 +55,30 @@ public class EditProfile extends AppCompatActivity {
 
         pi = ProfileInfo.getInstance();
 
+        BottomSheetDialog bsd = new BottomSheetDialog(this);
+        View sheetView = this.getLayoutInflater().inflate(R.layout.bottom_sheet_picture_dialog, null);
+        bsd.setContentView(sheetView);
+
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.ep_camera_button);
         fab.setOnClickListener(v ->{
-            BottomSheetDialog bsd = new BottomSheetDialog(this);
-            View sheetView = this.getLayoutInflater().inflate(R.layout.bottom_sheet_picture_dialog, null);
-            bsd.setContentView(sheetView);
-
             LinearLayout camera = (LinearLayout) bsd.findViewById(R.id.bs_camera_option);
             LinearLayout gallery = (LinearLayout) bsd.findViewById(R.id.bs_gallery_option);
 
-            camera.setOnClickListener(r -> {
-                Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                if (cameraIntent.resolveActivity(getPackageManager()) != null) {
-                    String fileName = "profile_pic";
-                    File imageFile = new File(this.getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES), fileName);
-
-                    if(imageFile != null){
-                        Uri imageUri = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID.concat(".fileprovider"), imageFile);
-                        pi.setImageUri(imageUri);
-                        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-                        startActivityForResult(cameraIntent, CAMERA);
-                    }
+            camera.setOnClickListener(v1 -> {
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, PERMISSIONS_REQUEST_CAMERA);
+                } else {
+                    cameraTakePicture();
                 }
 
                 bsd.dismiss();
             });
 
-            gallery.setOnClickListener(t -> {
-                Intent galleryIntent = new Intent(Intent.ACTION_PICK,
-                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                if (galleryIntent.resolveActivity(getPackageManager()) != null) {
-                    startActivityForResult(galleryIntent, GALLERY);
+            gallery.setOnClickListener(v2 -> {
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSIONS_REQUEST_EXTERNAL_STORAGE);
+                } else {
+                    galleryLoadPicture();
                 }
 
                 bsd.dismiss();
@@ -84,6 +86,28 @@ public class EditProfile extends AppCompatActivity {
 
             bsd.show();
         });
+    }
+
+    private void galleryLoadPicture() {
+        Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        if (galleryIntent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(galleryIntent, GALLERY);
+        }
+    }
+
+    private void cameraTakePicture() {
+        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (cameraIntent.resolveActivity(getPackageManager()) != null) {
+            String fileName = "profile_pic";
+            File imageFile = new File(this.getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES), fileName);
+
+            if(imageFile != null){
+                this.imageUri = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID.concat(".fileprovider"), imageFile);
+
+                cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, this.imageUri);
+                startActivityForResult(cameraIntent, CAMERA);
+            }
+        }
     }
 
     @Override
@@ -102,9 +126,9 @@ public class EditProfile extends AppCompatActivity {
         location.setText(pi.getLocation());
         description.setText(pi.getDescription());
 
-        Uri imageUri = pi.getImageUri();
-        if(imageUri != null) {
-            image.setImageURI(imageUri);
+        this.imageUri = pi.getImageUri();
+        if(this.imageUri != null) {
+            image.setImageURI(this.imageUri);
         }
     }
 
@@ -121,7 +145,6 @@ public class EditProfile extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.ep_save_profile:
                 saveInfo();
-                finish();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -160,7 +183,6 @@ public class EditProfile extends AppCompatActivity {
         pi.setImageUri(Uri.parse(savedInstanceState.getString("imageUri")));
 
         if(pi.getImageUri() != null){
-            Log.v("RESTORING", savedInstanceState.getString("imageUri"));
             ImageView imageview = findViewById(R.id.ep_profile_picture);
             imageview.setImageURI(pi.getImageUri());
         }
@@ -176,6 +198,7 @@ public class EditProfile extends AppCompatActivity {
         pi.setUsername(u.getText().toString());
         pi.setLocation(l.getText().toString());
         pi.setDescription(d.getText().toString());
+        pi.setImageUri(this.imageUri);
 
         Intent intent = new Intent(getApplicationContext(), ShowProfile.class);
         intent.putExtra("username", u.getText().toString());
@@ -196,14 +219,15 @@ public class EditProfile extends AppCompatActivity {
         if(resultCode == RESULT_OK) {
             switch (requestCode) {
                 case CAMERA:
-                    imageview.setImageURI(pi.getImageUri());
+                    imageview.setImageURI(null);
+                    imageview.setImageURI(this.imageUri);
 
                     break;
 
                 case GALLERY:
                     if (data != null) {
-                        pi.setImageUri(data.getData());
-                        imageview.setImageURI(pi.getImageUri());
+                        this.imageUri = data.getData();
+                        imageview.setImageURI(this.imageUri);
                     }
                     break;
 
@@ -211,6 +235,33 @@ public class EditProfile extends AppCompatActivity {
                     break;
 
             }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case PERMISSIONS_REQUEST_CAMERA: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    cameraTakePicture();
+                }
+
+                return;
+            }
+
+            case PERMISSIONS_REQUEST_EXTERNAL_STORAGE: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    galleryLoadPicture();
+                }
+
+                return;
+            }
+
+            default:
+                break;
         }
     }
 }

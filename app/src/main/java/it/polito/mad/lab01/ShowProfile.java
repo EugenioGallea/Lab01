@@ -172,8 +172,10 @@ public class ShowProfile extends AppCompatActivity {
                     location.setText(pi.getLocation());
                     description.setText(pi.getDescription());
 
-                    if(pi.getImageUri() != null)
+                    if(pi.getImageUri() != null) {
+                        imageview.setImageURI(null);
                         imageview.setImageURI(pi.getImageUri());
+                    }
                 }
 
                 break;
