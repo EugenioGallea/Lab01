@@ -2,23 +2,34 @@
     <string name="app_name">MAD Laboratory 1</string>
     <string name="show_profile">Show Profile</string>
     <string name="edit_profile">Edit Profile</string>
+    <string name="save_profile">Save Profile</string>
 
+    <string name="profile_picture">Profile picture</string>
+    <string name="send_email">Send e-mail</string>
+    <string name="show_location">Show location</string>
     <string name="lent_books">Lent books</string>
     <string name="borrowed_books">Borrowed books</string>
     <string name="to_be_returned">To be returned</string>
 
-    <string name="lorem_ipsum_250">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut non mauris vitae ante sollicitudin luctus. In hac habitasse platea dictumst. Nullam rhoncus, nulla et sodales tempor, ligula libero fermentum erat, ut tempor elit metus sed urna. Ut posuere. </string>
-    <string name="save_profile">Save Profile</string>
     <string name="hint_email">Email</string>
     <string name="hint_username">Username</string>
-    <string name="hint_description">Description</string>
+    <string name="hint_biography">Biography</string>
     <string name="hint_location">Location</string>
-    <string name="preference_file">PreferenceFileKey</string>
-    <string name="preference_email">SavedEmail</string>
-    <string name="preference_username">SavedUsername</string>
-    <string name="preference_location">SavedLocation</string>
-    <string name="preference_description">SavedDescription</string>
-    <string name="preference_imageUri">SavedImageUri</string>
+
+    <string name="default_email">email@default.com</string>
+    <string name="default_username">NoFAndroid</string>
+    <string name="default_city">Turin</string>
+    <string name="default_biography">No biography inserted yet</string>
+
     <string name="camera_option">Take picture from camera</string>
     <string name="gallery_option">Choose picture from gallery</string>
+    <string name="reset_option">Reset the default picture</string>
+
+    <string name="discard_changes">Discard changes?</string>
+    <string name="incorrect_values">Some fields are empty.\nPlease, fill them</string>
+    <string name="incorrect_email">E-mail address is invalid.\nPlease, change it</string>
+    <string name="failed_obtain_picture">Something went wrong while obtaining the picture</string>
+
+    <string name="number_zero">0</string>
+
 </resources>

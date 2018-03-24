@@ -20,12 +20,14 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:src="@drawable/ic_photo_camera_grey_24dp"/>
+            android:tint="@color/colorGrey"
+            android:src="@drawable/ic_photo_camera_white_24dp"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_marginStart="16dp"
             android:layout_marginLeft="16dp"
             android:text="@string/camera_option"/>
 
@@ -44,14 +46,42 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:src="@drawable/ic_image_grey_24dp"/>
+            android:tint="@color/colorGrey"
+            android:src="@drawable/ic_image_black_24dp"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_marginStart="16dp"
             android:layout_marginLeft="16dp"
             android:text="@string/gallery_option"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/bs_reset_option"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:orientation="horizontal"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:padding="16dp">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:tint="@color/colorGrey"
+            android:src="@drawable/ic_restore_black_24dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:text="@string/reset_option"/>
 
     </LinearLayout>
 

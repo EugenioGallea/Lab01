@@ -3,7 +3,7 @@
     <color name="colorPrimary">@color/light_green_500</color>
     <color name="colorPrimaryDark">@color/light_green_700</color>
     <color name="colorAccent">@color/light_green_700</color>
-    <color name="colorAccentDark">@color/light_green_900</color>
+    <color name="colorAccentDark">@color/light_green_800</color>
 
     <color name="light_green_100">#DCEDC8</color>
     <color name="light_green_200">#C5E1A5</color>
@@ -14,4 +14,6 @@
     <color name="light_green_700">#689F38</color>
     <color name="light_green_800">#558B2F</color>
     <color name="light_green_900">#33691E</color>
+
+    <color name="colorGrey">#737373</color>*
 </resources>

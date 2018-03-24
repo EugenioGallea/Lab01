@@ -22,7 +22,9 @@
             android:id="@+id/sp_profile_picture"
             android:layout_width="match_parent"
             android:layout_height="200dp"
-            android:src="@drawable/header" />
+            android:scaleType="centerCrop"
+            android:src="@drawable/default_header"
+            android:contentDescription="@string/profile_picture" />
 
         <LinearLayout
             android:id="@+id/sp_layout_header"
@@ -52,7 +54,7 @@
                     android:id="@+id/sp_username"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="NoFandroid"
+                    android:text="@string/default_username"
                     android:textAlignment="center"
                     android:textColor="@color/colorAccent"
                     android:textSize="24sp"
@@ -63,7 +65,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="Turin"
+                    android:text="@string/default_city"
                     android:textAlignment="center"
                     android:textColor="@color/colorAccent"
                     android:textSize="16sp" />
@@ -83,14 +85,16 @@
                     android:layout_height="28dp"
                     android:layout_marginBottom="12dp"
                     android:src="@drawable/ic_email_black_32dp"
-                    android:tint="@color/colorAccentDark" />
+                    android:tint="@color/colorAccentDark"
+                    android:contentDescription="@string/send_email" />
 
                 <ImageButton
                     android:id="@+id/sp_locate_icon"
                     android:layout_width="28dp"
                     android:layout_height="28dp"
                     android:src="@drawable/ic_location_on_black_32dp"
-                    android:tint="@color/colorAccentDark" />
+                    android:tint="@color/colorAccentDark"
+                    android:contentDescription="@string/show_location" />
             </LinearLayout>
         </LinearLayout>
 
@@ -134,7 +138,7 @@
                     android:id="@+id/sp_lent_books_number"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="45"
+                    android:text="@string/number_zero"
                     android:textAlignment="center"
                     android:textColor="@color/colorAccent"
                     android:textSize="18sp"
@@ -166,7 +170,7 @@
                     android:id="@+id/sp_borrowed_books_number"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="62"
+                    android:text="@string/number_zero"
                     android:textAlignment="center"
                     android:textColor="@color/colorAccent"
                     android:textSize="18sp"
@@ -198,7 +202,7 @@
                     android:id="@+id/sp_to_be_returned_number"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="3"
+                    android:text="@string/number_zero"
                     android:textAlignment="center"
                     android:textColor="@color/colorAccent"
                     android:textSize="18sp"
@@ -225,7 +229,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="16dp"
-            android:text="@string/lorem_ipsum_250"
+            android:text="@string/default_biography"
             android:textAlignment="center"
             android:textColor="@color/colorAccentDark"
             android:textSize="12sp" />
