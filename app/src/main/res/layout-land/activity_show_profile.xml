@@ -92,22 +92,22 @@
                         android:layout_gravity="center"
                         android:orientation="vertical">
 
-                        <ImageButton
+                        <android.support.v7.widget.AppCompatImageButton
                             android:id="@+id/sp_mail_icon"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:backgroundTint="@color/colorPrimary"
+                            app:backgroundTint="@color/colorPrimary"
                             android:contentDescription="@string/send_email"
                             android:elevation="6dp"
                             android:padding="8dp"
                             android:src="@drawable/ic_email_black_24dp"
                             android:tint="@color/colorIcon" />
 
-                        <ImageButton
+                        <android.support.v7.widget.AppCompatImageButton
                             android:id="@+id/sp_locate_icon"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:backgroundTint="@color/colorPrimary"
+                            app:backgroundTint="@color/colorPrimary"
                             android:contentDescription="@string/show_location"
                             android:elevation="6dp"
                             android:padding="8dp"

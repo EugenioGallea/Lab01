@@ -30,6 +30,7 @@ public class EditProfile extends AppCompatActivity {
 
     private static final String ORIGINAL_PROFILE_KEY = "original_profile";
     private static final String CURRENT_PROFILE_KEY = "current_profile";
+    private static final String IMAGE_URI_KEY = "image_uri";
     private static final String IMAGE_CHANGED_KEY = "image_changed";
     private static final String IMAGE_PATH = "profile_pic";
     private static final String IMAGE_PATH_TMP = "profile_pic_tmp";
@@ -41,7 +42,7 @@ public class EditProfile extends AppCompatActivity {
     private EditText email, username, location, biography;
     private ImageView imageView;
     private BottomSheetDialog bottomSheetDialog;
-    private Uri imageUri;
+    //private Uri tmpImageUri;
     private boolean imageChanged;
     private UserProfile originalProfile, currentProfile;
 
@@ -104,7 +105,6 @@ public class EditProfile extends AppCompatActivity {
             });
 
             reset.setOnClickListener(v3 -> {
-                this.imageUri = null;
                 this.imageChanged = false;
                 currentProfile.update(null);
                 imageView.setImageURI(currentProfile.getImageUriOrDefault(this));
@@ -187,9 +187,9 @@ public class EditProfile extends AppCompatActivity {
         if (cameraIntent.resolveActivity(getPackageManager()) != null) {
 
             File imageFile = new File(this.getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES), IMAGE_PATH_TMP);
-            this.imageUri = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID.concat(".fileprovider"), imageFile);
+            Uri imageUri = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID.concat(".fileprovider"), imageFile);
 
-            cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, this.imageUri);
+            cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
             startActivityForResult(cameraIntent, CAMERA);
         }
     }
@@ -202,9 +202,15 @@ public class EditProfile extends AppCompatActivity {
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
                 case CAMERA:
+
+                    File imageFileCamera = new File(this.getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES), IMAGE_PATH_TMP);
+                    Uri imageUriCamera = Uri.fromFile(imageFileCamera);
+
+                    // Reset the image even if the filename is the same
                     imageView.setImageURI(null);
-                    currentProfile.update(this.imageUri);
-                    imageView.setImageURI(this.imageUri);
+                    imageView.setImageURI(imageUriCamera);
+                    currentProfile.update(imageUriCamera);
+
                     this.imageChanged = true;
                     break;
 
@@ -212,16 +218,20 @@ public class EditProfile extends AppCompatActivity {
                     if (data != null && data.getData() != null) {
 
                         // Move the image to a temporary location
-                        File imageFile = new File(this.getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES), IMAGE_PATH_TMP);
+                        File imageFileGallery = new File(this.getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES), IMAGE_PATH_TMP);
                         try {
-                            Utilities.copyFile(new File(Utilities.getRealPathFromURI(this, data.getData())), imageFile);
+                            Utilities.copyFile(new File(Utilities.getRealPathFromURI(this, data.getData())), imageFileGallery);
                         } catch (IOException e) {
                             showErrorMessage(getString(R.string.failed_obtain_picture));
                         }
 
-                        this.imageUri = Uri.fromFile(imageFile);
-                        currentProfile.update(this.imageUri);
-                        imageView.setImageURI(this.imageUri);
+                        Uri imageUriGallery = Uri.fromFile(imageFileGallery);
+
+                        // Reset the image even if the filename is the same
+                        imageView.setImageURI(null);
+                        imageView.setImageURI(imageUriGallery);
+                        currentProfile.update(imageUriGallery);
+
                         this.imageChanged = true;
                     }
                     break;
@@ -257,6 +267,9 @@ public class EditProfile extends AppCompatActivity {
         username.setText(profile.getUsername());
         location.setText(profile.getLocation());
         biography.setText(profile.getBiography());
+
+        // Reset the image even if the filename is the same
+        imageView.setImageURI(null);
         imageView.setImageURI(profile.getImageUriOrDefault(this));
     }
 
@@ -283,7 +296,7 @@ public class EditProfile extends AppCompatActivity {
         }
 
         // Save the image permanently
-        if (this.imageChanged && this.imageUri != null) {
+        if (this.imageChanged) {
             File sourceFile = new File(this.getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES), IMAGE_PATH_TMP);
             File destinationFile = new File(this.getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES), IMAGE_PATH);
             if (!sourceFile.renameTo(destinationFile)) {
