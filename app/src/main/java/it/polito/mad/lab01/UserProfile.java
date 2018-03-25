@@ -33,7 +33,7 @@ public class UserProfile implements Serializable {
         this.location = other.getLocation();
         this.biography = other.getBiography();
 
-        this.imageUri = other.getImageUriOrNullString();
+        this.imageUri = other.imageUri;
 
         this.rating = other.getRating();
         this.lentBooks = other.getLentBooks();
@@ -49,12 +49,7 @@ public class UserProfile implements Serializable {
         this.biography = sharedPref.getString(id + "_" + BIOGRAPHY_PREFERENCE_KEY, ctx.getString(R.string.default_biography));
 
         this.imageUri = null;
-        String imageUri = sharedPref.getString(id + "_" + IMAGE_PREFERENCE_KEY, null);
-        if (imageUri != null) {
-            if (checkImageExistence(imageUri)) {
-                this.imageUri = imageUri;
-            }
-        }
+        this.imageUri = sharedPref.getString(id + "_" + IMAGE_PREFERENCE_KEY, null);
 
         this.rating = 4.5f;
         this.lentBooks = 18;
@@ -70,8 +65,7 @@ public class UserProfile implements Serializable {
     }
 
     public void update(Uri imageUri) {
-        String uri = imageUri == null ? null : imageUri.toString();
-        this.imageUri = checkImageExistence(uri) ? uri : null;
+        this.imageUri = imageUri == null ? null : imageUri.toString();
     }
 
     public void save(@NonNull String id, @NonNull SharedPreferences.Editor sharedPrefEditor) {
@@ -110,15 +104,7 @@ public class UserProfile implements Serializable {
         return this.biography;
     }
 
-    private String getImageUriOrNullString() {
-        return checkImageExistence(this.imageUri) ? this.imageUri : null;
-    }
-
-    public Uri getImageUriOrNull() {
-        return checkImageExistence(this.imageUri) ? Uri.parse(this.imageUri) : null;
-    }
-
-    public Uri getImageUri(@NonNull Context ctx) {
+    public Uri getImageUriOrDefault(@NonNull Context ctx) {
         Uri uri = getImageUriOrNull();
         return (uri == null) ? getDefaultImageUri(ctx) : uri;
     }
@@ -151,8 +137,8 @@ public class UserProfile implements Serializable {
 
         UserProfile otherUP = (UserProfile) other;
 
-        String thisUri = this.getImageUriOrNullString();
-        String otherUri = otherUP.getImageUriOrNullString();
+        String thisUri = this.imageUri;
+        String otherUri = otherUP.imageUri;
 
         return this.getEmail().equals(otherUP.getEmail()) &&
                 this.getUsername().equals(otherUP.getUsername()) &&
@@ -166,14 +152,8 @@ public class UserProfile implements Serializable {
                         thisUri != null && thisUri.equals(otherUri));
     }
 
-    private static boolean checkImageExistence(String uri) {
-        if (uri == null) {
-            return false;
-        }
-
-        //File file = new File(uri);
-        //return file.exists();
-        return true;
+    private Uri getImageUriOrNull() {
+        return this.imageUri != null ? Uri.parse(this.imageUri) : null;
     }
 
     private static Uri getDefaultImageUri(Context context) {

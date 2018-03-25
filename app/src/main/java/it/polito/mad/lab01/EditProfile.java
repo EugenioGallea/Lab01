@@ -30,6 +30,7 @@ public class EditProfile extends AppCompatActivity {
 
     private static final String ORIGINAL_PROFILE_KEY = "original_profile";
     private static final String CURRENT_PROFILE_KEY = "current_profile";
+    private static final String IMAGE_CHANGED_KEY = "image_changed";
     private static final String IMAGE_PATH = "profile_pic";
     private static final String IMAGE_PATH_TMP = "profile_pic_tmp";
 
@@ -39,7 +40,9 @@ public class EditProfile extends AppCompatActivity {
 
     private EditText email, username, location, biography;
     private ImageView imageView;
+    private BottomSheetDialog bottomSheetDialog;
     private Uri imageUri;
+    private boolean imageChanged;
     private UserProfile originalProfile, currentProfile;
 
     @Override
@@ -64,16 +67,18 @@ public class EditProfile extends AppCompatActivity {
             // If they was saved, load them
             originalProfile = (UserProfile) savedInstanceState.getSerializable(ORIGINAL_PROFILE_KEY);
             currentProfile = (UserProfile) savedInstanceState.getSerializable(CURRENT_PROFILE_KEY);
+            imageChanged = savedInstanceState.getBoolean(IMAGE_CHANGED_KEY, false);
         } else {
             // Otherwise, obtain them through the intent
             originalProfile = (UserProfile) this.getIntent().getSerializableExtra(UserProfile.PROFILE_INFO_KEY);
             currentProfile = new UserProfile(originalProfile);
+            imageChanged = false;
         }
 
         // Fill the views with the data
         fillViews(currentProfile);
 
-        final BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
+        bottomSheetDialog = new BottomSheetDialog(this);
         final View sheetView = this.getLayoutInflater().inflate(R.layout.bottom_sheet_picture_dialog, null);
         bottomSheetDialog.setContentView(sheetView);
 
@@ -99,13 +104,24 @@ public class EditProfile extends AppCompatActivity {
             });
 
             reset.setOnClickListener(v3 -> {
+                this.imageUri = null;
+                this.imageChanged = false;
                 currentProfile.update(null);
-                imageView.setImageURI(currentProfile.getImageUri(this));
+                imageView.setImageURI(currentProfile.getImageUriOrDefault(this));
                 bottomSheetDialog.dismiss();
             });
 
             bottomSheetDialog.show();
         });
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        if (bottomSheetDialog.isShowing()) {
+            bottomSheetDialog.dismiss();
+        }
     }
 
     @Override
@@ -138,14 +154,14 @@ public class EditProfile extends AppCompatActivity {
     public void onBackPressed() {
 
         updateProfileInfo(currentProfile);
-        if (!currentProfile.equals(originalProfile)) {
+        if (!currentProfile.equals(originalProfile) || this.imageChanged) {
             new AlertDialog.Builder(this)
                     .setMessage(getString(R.string.discard_changes))
-                    .setPositiveButton(getString(android.R.string.yes), (dialog, which) -> finish())
+                    .setPositiveButton(getString(android.R.string.yes), (dialog, which) -> cleanupAndFinish())
                     .setNegativeButton(getString(android.R.string.no), null)
                     .show();
         } else {
-            finish();
+            cleanupAndFinish();
         }
     }
 
@@ -156,6 +172,7 @@ public class EditProfile extends AppCompatActivity {
         updateProfileInfo(currentProfile);
         outState.putSerializable(ORIGINAL_PROFILE_KEY, originalProfile);
         outState.putSerializable(CURRENT_PROFILE_KEY, currentProfile);
+        outState.putBoolean(IMAGE_CHANGED_KEY, imageChanged);
     }
 
     private void galleryLoadPicture() {
@@ -188,12 +205,13 @@ public class EditProfile extends AppCompatActivity {
                     imageView.setImageURI(null);
                     currentProfile.update(this.imageUri);
                     imageView.setImageURI(this.imageUri);
+                    this.imageChanged = true;
                     break;
 
                 case GALLERY:
                     if (data != null && data.getData() != null) {
-                        this.imageUri = data.getData();
 
+                        // Move the image to a temporary location
                         File imageFile = new File(this.getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES), IMAGE_PATH_TMP);
                         try {
                             Utilities.copyFile(new File(Utilities.getRealPathFromURI(this, data.getData())), imageFile);
@@ -204,6 +222,7 @@ public class EditProfile extends AppCompatActivity {
                         this.imageUri = Uri.fromFile(imageFile);
                         currentProfile.update(this.imageUri);
                         imageView.setImageURI(this.imageUri);
+                        this.imageChanged = true;
                     }
                     break;
 
@@ -238,7 +257,7 @@ public class EditProfile extends AppCompatActivity {
         username.setText(profile.getUsername());
         location.setText(profile.getLocation());
         biography.setText(profile.getBiography());
-        imageView.setImageURI(profile.getImageUri(this));
+        imageView.setImageURI(profile.getImageUriOrDefault(this));
     }
 
     private void updateProfileInfo(UserProfile profile) {
@@ -263,7 +282,18 @@ public class EditProfile extends AppCompatActivity {
             return false;
         }
 
-        if (!originalProfile.equals(currentProfile)) {
+        // Save the image permanently
+        if (this.imageChanged && this.imageUri != null) {
+            File sourceFile = new File(this.getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES), IMAGE_PATH_TMP);
+            File destinationFile = new File(this.getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES), IMAGE_PATH);
+            if (!sourceFile.renameTo(destinationFile)) {
+                showErrorMessage(getString(R.string.failed_obtain_picture));
+                return false;
+            }
+            currentProfile.update(Uri.fromFile(destinationFile));
+        }
+
+        if (!originalProfile.equals(currentProfile) || this.imageChanged) {
             Intent intent = new Intent(getApplicationContext(), ShowProfile.class);
             intent.putExtra(UserProfile.PROFILE_INFO_KEY, currentProfile);
             setResult(RESULT_OK, intent);
@@ -278,5 +308,13 @@ public class EditProfile extends AppCompatActivity {
                 .setMessage(message)
                 .setPositiveButton(getString(android.R.string.ok), null)
                 .show();
+    }
+
+    private void cleanupAndFinish() {
+        File tmpImageFile = new File(this.getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES), IMAGE_PATH_TMP);
+        if (tmpImageFile.exists()) {
+            tmpImageFile.deleteOnExit();
+        }
+        finish();
     }
 }

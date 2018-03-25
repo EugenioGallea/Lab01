@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="@color/colorPrimary"
-        android:elevation="4dp"
+        android:elevation="6dp"
         android:theme="@style/ThemeOverlay.AppCompat.Dark"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Dark" />
 
@@ -24,17 +24,17 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="4"
+            android:contentDescription="@string/profile_picture"
             android:scaleType="centerCrop"
-            android:src="@drawable/default_header"
-            android:contentDescription="@string/profile_picture" />
+            android:src="@drawable/default_header" />
 
         <ScrollView
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginTop="5dp"
-            android:layout_weight="6">
+            android:layout_weight="6"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:paddingTop="6dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -46,22 +46,20 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:paddingBottom="10dp"
-                    android:paddingTop="5dp">
+                    android:paddingBottom="12dp"
+                    android:paddingTop="6dp">
 
                     <View
-                        android:layout_width="28dp"
-                        android:layout_height="match_parent"
-                        android:layout_marginLeft="16dp"
-                        android:layout_marginStart="16dp"/>
+                        android:layout_width="40dp"
+                        android:layout_height="match_parent" />
 
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
-                        android:layout_marginLeft="10dp"
-                        android:layout_marginEnd="10dp"
-                        android:layout_marginRight="10dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginRight="8dp"
+                        android:layout_marginStart="8dp"
                         android:layout_weight="1"
                         android:orientation="vertical"
                         android:paddingBottom="10dp"
@@ -73,8 +71,8 @@
                             android:layout_height="wrap_content"
                             android:text="@string/default_username"
                             android:textAlignment="center"
-                            android:textColor="@color/colorAccent"
-                            android:textSize="24sp"
+                            android:textColor="@color/colorTextAccent"
+                            android:textSize="@dimen/material_text_headline"
                             android:textStyle="bold" />
 
                         <TextView
@@ -84,58 +82,61 @@
                             android:layout_marginTop="8dp"
                             android:text="@string/default_city"
                             android:textAlignment="center"
-                            android:textColor="@color/colorAccent"
-                            android:textSize="16sp" />
+                            android:textColor="@color/colorText"
+                            android:textSize="@dimen/material_text_subhead" />
                     </LinearLayout>
 
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:layout_marginEnd="16dp"
-                        android:layout_marginRight="16dp"
                         android:orientation="vertical">
 
                         <ImageButton
                             android:id="@+id/sp_mail_icon"
-                            android:layout_width="28dp"
-                            android:layout_height="28dp"
-                            android:layout_marginBottom="12dp"
-                            android:src="@drawable/ic_email_black_32dp"
-                            android:tint="@color/colorAccentDark"
-                            android:contentDescription="@string/send_email" />
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:backgroundTint="@color/colorPrimary"
+                            android:contentDescription="@string/send_email"
+                            android:elevation="6dp"
+                            android:padding="8dp"
+                            android:src="@drawable/ic_email_black_24dp"
+                            android:tint="@color/colorIcon" />
 
                         <ImageButton
                             android:id="@+id/sp_locate_icon"
-                            android:layout_width="28dp"
-                            android:layout_height="28dp"
-                            android:src="@drawable/ic_location_on_black_32dp"
-                            android:tint="@color/colorAccentDark"
-                            android:contentDescription="@string/show_location" />
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:backgroundTint="@color/colorPrimary"
+                            android:contentDescription="@string/show_location"
+                            android:elevation="6dp"
+                            android:padding="8dp"
+                            android:src="@drawable/ic_location_on_black_24dp"
+                            android:tint="@color/colorIcon" />
                     </LinearLayout>
                 </LinearLayout>
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="0.3dp"
-                    android:background="@color/colorAccent" />
+                    android:background="@color/colorPrimary" />
 
                 <RatingBar
                     android:id="@+id/sp_rating_bar"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
-                    android:paddingTop="5dp"
+                    android:isIndicator="true"
                     android:numStars="5"
+                    android:paddingTop="5dp"
                     android:scaleX=".75"
                     android:scaleY=".75"
-                    android:stepSize="0.5"
-                    android:isIndicator="true" />
+                    android:stepSize="0.5" />
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="0.3dp"
-                    android:background="@color/colorAccent" />
+                    android:background="@color/colorPrimary" />
 
                 <LinearLayout
                     android:id="@+id/sp_layout_stats"
@@ -157,8 +158,8 @@
                             android:layout_height="wrap_content"
                             android:text="@string/number_zero"
                             android:textAlignment="center"
-                            android:textColor="@color/colorAccent"
-                            android:textSize="18sp"
+                            android:textColor="@color/colorTextAccent"
+                            android:textSize="@dimen/material_text_title"
                             android:textStyle="bold" />
 
                         <TextView
@@ -167,15 +168,15 @@
                             android:layout_height="match_parent"
                             android:text="@string/lent_books"
                             android:textAlignment="center"
-                            android:textColor="@color/colorAccentDark"
-                            android:textSize="12sp" />
+                            android:textColor="@color/colorText"
+                            android:textSize="@dimen/material_text_caption" />
 
                     </LinearLayout>
 
                     <View
                         android:layout_width="0.3dp"
                         android:layout_height="match_parent"
-                        android:background="@color/colorAccent" />
+                        android:background="@color/colorPrimary" />
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -189,8 +190,8 @@
                             android:layout_height="wrap_content"
                             android:text="@string/number_zero"
                             android:textAlignment="center"
-                            android:textColor="@color/colorAccent"
-                            android:textSize="18sp"
+                            android:textColor="@color/colorTextAccent"
+                            android:textSize="@dimen/material_text_title"
                             android:textStyle="bold" />
 
                         <TextView
@@ -199,15 +200,15 @@
                             android:layout_height="match_parent"
                             android:text="@string/borrowed_books"
                             android:textAlignment="center"
-                            android:textColor="@color/colorAccentDark"
-                            android:textSize="12sp" />
+                            android:textColor="@color/colorText"
+                            android:textSize="@dimen/material_text_caption" />
 
                     </LinearLayout>
 
                     <View
                         android:layout_width="0.3dp"
                         android:layout_height="match_parent"
-                        android:background="@color/colorAccent" />
+                        android:background="@color/colorPrimary" />
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -221,8 +222,8 @@
                             android:layout_height="wrap_content"
                             android:text="@string/number_zero"
                             android:textAlignment="center"
-                            android:textColor="@color/colorAccent"
-                            android:textSize="18sp"
+                            android:textColor="@color/colorTextAccent"
+                            android:textSize="@dimen/material_text_title"
                             android:textStyle="bold" />
 
                         <TextView
@@ -231,15 +232,15 @@
                             android:layout_height="match_parent"
                             android:text="@string/to_be_returned"
                             android:textAlignment="center"
-                            android:textColor="@color/colorAccentDark"
-                            android:textSize="12sp" />
+                            android:textColor="@color/colorText"
+                            android:textSize="@dimen/material_text_caption" />
                     </LinearLayout>
                 </LinearLayout>
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="0.3dp"
-                    android:background="@color/colorAccent" />
+                    android:background="@color/colorPrimary" />
 
                 <TextView
                     android:id="@+id/sp_description"
@@ -248,8 +249,8 @@
                     android:padding="16dp"
                     android:text="@string/default_biography"
                     android:textAlignment="center"
-                    android:textColor="@color/colorAccentDark"
-                    android:textSize="12sp" />
+                    android:textColor="@color/colorText"
+                    android:textSize="@dimen/material_text_body1" />
 
             </LinearLayout>
 

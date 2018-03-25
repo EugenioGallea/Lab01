@@ -133,7 +133,9 @@ public class ShowProfile extends AppCompatActivity {
         location.setText(profile.getLocation());
         biography.setText(profile.getBiography());
 
-        image.setImageURI(profile.getImageUri(this));
+        // Reset the image even if the filename is the same
+        image.setImageURI(null);
+        image.setImageURI(profile.getImageUriOrDefault(this));
 
         rating.setRating(profile.getRating());
 
