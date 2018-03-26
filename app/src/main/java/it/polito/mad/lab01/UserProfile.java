@@ -2,6 +2,7 @@ package it.polito.mad.lab01;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
@@ -104,9 +105,10 @@ public class UserProfile implements Serializable {
         return this.biography;
     }
 
-    public Uri getImageUriOrDefault(@NonNull Context ctx) {
+    public Bitmap getImageBitmapOrDefault(@NonNull Context ctx) {
+
         Uri uri = getImageUriOrNull();
-        return (uri == null) ? getDefaultImageUri(ctx) : uri;
+        return  Utilities.loadImage(uri, getDefaultImageUri(ctx), ctx.getContentResolver());
     }
 
     public float getRating() {

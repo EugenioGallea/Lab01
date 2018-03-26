@@ -107,7 +107,7 @@ public class EditProfile extends AppCompatActivity {
             reset.setOnClickListener(v3 -> {
                 this.imageChanged = false;
                 currentProfile.update(null);
-                imageView.setImageURI(currentProfile.getImageUriOrDefault(this));
+                imageView.setImageBitmap(currentProfile.getImageBitmapOrDefault(this));
                 bottomSheetDialog.dismiss();
             });
 
@@ -206,10 +206,8 @@ public class EditProfile extends AppCompatActivity {
                     File imageFileCamera = new File(this.getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES), IMAGE_PATH_TMP);
                     Uri imageUriCamera = Uri.fromFile(imageFileCamera);
 
-                    // Reset the image even if the filename is the same
-                    imageView.setImageURI(null);
-                    imageView.setImageURI(imageUriCamera);
                     currentProfile.update(imageUriCamera);
+                    imageView.setImageBitmap(currentProfile.getImageBitmapOrDefault(this));
 
                     this.imageChanged = true;
                     break;
@@ -227,10 +225,8 @@ public class EditProfile extends AppCompatActivity {
 
                         Uri imageUriGallery = Uri.fromFile(imageFileGallery);
 
-                        // Reset the image even if the filename is the same
-                        imageView.setImageURI(null);
-                        imageView.setImageURI(imageUriGallery);
                         currentProfile.update(imageUriGallery);
+                        imageView.setImageBitmap(currentProfile.getImageBitmapOrDefault(this));
 
                         this.imageChanged = true;
                     }
@@ -268,9 +264,7 @@ public class EditProfile extends AppCompatActivity {
         location.setText(profile.getLocation());
         biography.setText(profile.getBiography());
 
-        // Reset the image even if the filename is the same
-        imageView.setImageURI(null);
-        imageView.setImageURI(profile.getImageUriOrDefault(this));
+        imageView.setImageBitmap(profile.getImageBitmapOrDefault(this));
     }
 
     private void updateProfileInfo(UserProfile profile) {

@@ -4,8 +4,10 @@ import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.net.Uri;
-import android.provider.MediaStore;
 import android.support.annotation.AnyRes;
 import android.support.annotation.NonNull;
 
@@ -14,6 +16,10 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
+
+import static android.provider.MediaStore.Images.Media.DATA;
+import static android.provider.MediaStore.Images.Media.getBitmap;
+import static android.provider.MediaStore.Video;
 
 public class Utilities {
 
@@ -55,10 +61,58 @@ public class Utilities {
     }
 
     public static String getRealPathFromURI(@NonNull Activity activity, @NonNull Uri contentUri) {
-        String[] proj = { MediaStore.Video.Media.DATA };
+        String[] proj = { Video.Media.DATA };
         Cursor cursor = activity.managedQuery(contentUri, proj, null, null, null);
-        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        int column_index = cursor.getColumnIndexOrThrow(DATA);
         cursor.moveToFirst();
         return cursor.getString(column_index);
+    }
+
+    private static Bitmap rotateImage(@NonNull Bitmap source, float angle) {
+        Matrix matrix = new Matrix();
+        matrix.postRotate(angle);
+        return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(),
+                matrix, true);
+    }
+
+    public static Bitmap loadImage(Uri imageUri, @NonNull Uri defaultUri, @NonNull ContentResolver contentResolver) {
+        ExifInterface ei = null;
+        Bitmap bitmap = null;
+
+        if (imageUri != null) {
+            try {
+                bitmap = getBitmap(contentResolver, imageUri);
+                ei = new ExifInterface(imageUri.getPath());
+            } catch (IOException e) {
+                bitmap = null;
+            }
+        }
+
+        // Use the default image
+        if (bitmap == null) {
+            try {
+                return getBitmap(contentResolver, defaultUri);
+            } catch (IOException e) {
+                return null;
+            }
+        }
+
+        int orientation = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION,
+                ExifInterface.ORIENTATION_UNDEFINED);
+        switch(orientation) {
+
+            case ExifInterface.ORIENTATION_ROTATE_90:
+                return rotateImage(bitmap, 90);
+
+            case ExifInterface.ORIENTATION_ROTATE_180:
+                return rotateImage(bitmap, 180);
+
+            case ExifInterface.ORIENTATION_ROTATE_270:
+                return rotateImage(bitmap, 270);
+
+            case ExifInterface.ORIENTATION_NORMAL:
+            default:
+                return bitmap;
+        }
     }
 }
