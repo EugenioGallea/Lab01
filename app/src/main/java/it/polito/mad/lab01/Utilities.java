@@ -5,11 +5,15 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.support.annotation.AnyRes;
 import android.support.annotation.NonNull;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.widget.EditText;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -75,26 +79,28 @@ public class Utilities {
                 matrix, true);
     }
 
-    public static Bitmap loadImage(Uri imageUri, @NonNull Uri defaultUri, @NonNull ContentResolver contentResolver) {
+    public static Bitmap loadImage(Uri imageUri, @NonNull Uri defaultUri, int targetWidth, int targetHeight, ContentResolver ctr) {
         ExifInterface ei = null;
         Bitmap bitmap = null;
 
         if (imageUri != null) {
             try {
-                bitmap = getBitmap(contentResolver, imageUri);
+                bitmap = Utilities.getImage(imageUri.getPath(), targetWidth, targetHeight);
                 ei = new ExifInterface(imageUri.getPath());
             } catch (IOException e) {
                 bitmap = null;
+            }
+        }else{
+            try {
+                return getBitmap(ctr, defaultUri);
+            } catch (IOException e) {
+                return null;
             }
         }
 
         // Use the default image
         if (bitmap == null) {
-            try {
-                return getBitmap(contentResolver, defaultUri);
-            } catch (IOException e) {
-                return null;
-            }
+            return Utilities.getImage(defaultUri.getPath(), targetWidth, targetHeight);
         }
 
         int orientation = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION,
@@ -113,6 +119,62 @@ public class Utilities {
             case ExifInterface.ORIENTATION_NORMAL:
             default:
                 return bitmap;
+        }
+    }
+
+    public static Bitmap getImage(String imagePath, int targetWidth, int targetHeight) {
+
+        // Get the dimensions of the bitmap
+        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+        bmOptions.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(imagePath, bmOptions);
+        int photoW = bmOptions.outWidth;
+        int photoH = bmOptions.outHeight;
+
+        // Determine how much to scale down the image
+        int scaleFactor = Math.min(photoW/targetWidth, photoH/targetHeight);
+
+        // Decode the image file into a Bitmap sized to fill the View
+        bmOptions.inJustDecodeBounds = false;
+        bmOptions.inSampleSize = scaleFactor;
+        bmOptions.inPurgeable = true;
+
+        Bitmap bitmap = BitmapFactory.decodeFile(imagePath, bmOptions);
+        return bitmap;
+    }
+
+    public interface TextWatcherValidator {
+        boolean validate(String string);
+    }
+
+    public static class GenericTextWatcher implements TextWatcher {
+
+        private final EditText textField;
+        private final String errorMessage;
+        private final TextWatcherValidator validator;
+
+        public GenericTextWatcher(@NonNull EditText textField, @NonNull String errorMessage,
+                                  @NonNull TextWatcherValidator validator){
+            this.textField = textField;
+            this.errorMessage = errorMessage;
+            this.validator = validator;
+        }
+
+        @Override
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable editable) {
+            if (!validator.validate(editable.toString())) {
+                textField.setError(errorMessage);
+            }
         }
     }
 }

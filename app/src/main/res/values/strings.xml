@@ -25,6 +25,9 @@
     <string name="gallery_option">Choose picture from gallery</string>
     <string name="reset_option">Reset the default picture</string>
 
+    <string name="invalid_username">Username must not be empty</string>
+    <string name="invalid_email">Invalid e-mail format</string>
+    <string name="invalid_location">Location must not be empty</string>
     <string name="discard_changes">Discard changes?</string>
     <string name="incorrect_values">Some fields are empty.\nPlease, fill them</string>
     <string name="incorrect_email">E-mail address is invalid.\nPlease, change it</string>

@@ -16,6 +16,7 @@ import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Patterns;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -107,12 +108,24 @@ public class EditProfile extends AppCompatActivity {
             reset.setOnClickListener(v3 -> {
                 this.imageChanged = false;
                 currentProfile.update(null);
-                imageView.setImageBitmap(currentProfile.getImageBitmapOrDefault(this));
+                imageView.setImageBitmap(currentProfile.getImageBitmapOrDefault(this, imageView.getMaxWidth(), imageView.getMaxHeight(), getContentResolver()));
                 bottomSheetDialog.dismiss();
             });
 
             bottomSheetDialog.show();
         });
+
+        username.addTextChangedListener(
+                new Utilities.GenericTextWatcher(username, getString(R.string.invalid_username),
+                        string -> !Utilities.isNullOrWhitespace(string)));
+
+        email.addTextChangedListener(
+                new Utilities.GenericTextWatcher(email, getString(R.string.invalid_email),
+                        string -> Patterns.EMAIL_ADDRESS.matcher(string).matches()));
+
+        location.addTextChangedListener(
+                new Utilities.GenericTextWatcher(location, getString(R.string.invalid_location),
+                        string -> !Utilities.isNullOrWhitespace(string)));
     }
 
     @Override
@@ -207,7 +220,7 @@ public class EditProfile extends AppCompatActivity {
                     Uri imageUriCamera = Uri.fromFile(imageFileCamera);
 
                     currentProfile.update(imageUriCamera);
-                    imageView.setImageBitmap(currentProfile.getImageBitmapOrDefault(this));
+                    imageView.setImageBitmap(currentProfile.getImageBitmapOrDefault(this, imageView.getMaxWidth(), imageView.getMaxHeight(), getContentResolver()));
 
                     this.imageChanged = true;
                     break;
@@ -226,7 +239,7 @@ public class EditProfile extends AppCompatActivity {
                         Uri imageUriGallery = Uri.fromFile(imageFileGallery);
 
                         currentProfile.update(imageUriGallery);
-                        imageView.setImageBitmap(currentProfile.getImageBitmapOrDefault(this));
+                        imageView.setImageBitmap(currentProfile.getImageBitmapOrDefault(this, imageView.getMaxWidth(), imageView.getMaxHeight(), getContentResolver()));
 
                         this.imageChanged = true;
                     }
@@ -264,7 +277,7 @@ public class EditProfile extends AppCompatActivity {
         location.setText(profile.getLocation());
         biography.setText(profile.getBiography());
 
-        imageView.setImageBitmap(profile.getImageBitmapOrDefault(this));
+        imageView.setImageBitmap(profile.getImageBitmapOrDefault(this, imageView.getMaxWidth(), imageView.getMaxHeight(), getContentResolver()));
     }
 
     private void updateProfileInfo(UserProfile profile) {

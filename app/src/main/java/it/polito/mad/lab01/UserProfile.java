@@ -1,10 +1,12 @@
 package it.polito.mad.lab01;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.util.Patterns;
 
 import java.io.Serializable;
 
@@ -86,7 +88,7 @@ public class UserProfile implements Serializable {
     }
 
     public boolean isEmailValid() {
-        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
+        return Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
 
     public String getEmail() {
@@ -105,10 +107,9 @@ public class UserProfile implements Serializable {
         return this.biography;
     }
 
-    public Bitmap getImageBitmapOrDefault(@NonNull Context ctx) {
-
+    public Bitmap getImageBitmapOrDefault(@NonNull Context ctx, int targetWidth, int targetHeight, ContentResolver ctr) {
         Uri uri = getImageUriOrNull();
-        return  Utilities.loadImage(uri, getDefaultImageUri(ctx), ctx.getContentResolver());
+        return  Utilities.loadImage(uri, getDefaultImageUri(ctx), targetWidth, targetHeight, ctr);
     }
 
     public float getRating() {
