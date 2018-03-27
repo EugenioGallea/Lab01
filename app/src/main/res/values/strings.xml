@@ -34,5 +34,5 @@
     <string name="failed_obtain_picture">Something went wrong while obtaining the picture</string>
 
     <string name="number_zero">0</string>
-
+    <string name="alpha_space_characters">abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ</string>
 </resources>

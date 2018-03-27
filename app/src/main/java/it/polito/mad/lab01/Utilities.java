@@ -3,6 +3,7 @@ package it.polito.mad.lab01;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -10,9 +11,11 @@ import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.support.annotation.AnyRes;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.widget.EditText;
 
 import java.io.File;
@@ -22,7 +25,6 @@ import java.io.IOException;
 import java.nio.channels.FileChannel;
 
 import static android.provider.MediaStore.Images.Media.DATA;
-import static android.provider.MediaStore.Images.Media.getBitmap;
 import static android.provider.MediaStore.Video;
 
 public class Utilities {
@@ -65,7 +67,7 @@ public class Utilities {
     }
 
     public static String getRealPathFromURI(@NonNull Activity activity, @NonNull Uri contentUri) {
-        String[] proj = { Video.Media.DATA };
+        String[] proj = {Video.Media.DATA};
         Cursor cursor = activity.managedQuery(contentUri, proj, null, null, null);
         int column_index = cursor.getColumnIndexOrThrow(DATA);
         cursor.moveToFirst();
@@ -79,33 +81,29 @@ public class Utilities {
                 matrix, true);
     }
 
-    public static Bitmap loadImage(Uri imageUri, @NonNull Uri defaultUri, int targetWidth, int targetHeight, ContentResolver ctr) {
+    public static Bitmap loadImage(String imagePath, int targetWidth, int targetHeight,
+                                   @NonNull Resources resources, @DrawableRes int defaultDrawable) {
         ExifInterface ei = null;
         Bitmap bitmap = null;
 
-        if (imageUri != null) {
+        if (imagePath != null) {
             try {
-                bitmap = Utilities.getImage(imageUri.getPath(), targetWidth, targetHeight);
-                ei = new ExifInterface(imageUri.getPath());
+                bitmap = Utilities.getImage(imagePath, targetWidth, targetHeight);
+                //bitmap = BitmapFactory.decodeFile(imagePath);
+                ei = new ExifInterface(imagePath);
             } catch (IOException e) {
                 bitmap = null;
-            }
-        }else{
-            try {
-                return getBitmap(ctr, defaultUri);
-            } catch (IOException e) {
-                return null;
             }
         }
 
         // Use the default image
         if (bitmap == null) {
-            return Utilities.getImage(defaultUri.getPath(), targetWidth, targetHeight);
+            return BitmapFactory.decodeResource(resources, defaultDrawable);
         }
 
         int orientation = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION,
                 ExifInterface.ORIENTATION_UNDEFINED);
-        switch(orientation) {
+        switch (orientation) {
 
             case ExifInterface.ORIENTATION_ROTATE_90:
                 return rotateImage(bitmap, 90);
@@ -132,19 +130,23 @@ public class Utilities {
         int photoH = bmOptions.outHeight;
 
         // Determine how much to scale down the image
-        int scaleFactor = Math.min(photoW/targetWidth, photoH/targetHeight);
+        int scaleFactor = 0;
+        if (targetWidth != 0 && targetHeight != 0) {
+            scaleFactor = Math.min(photoW / targetWidth, photoH / targetHeight);
+        } else {
+            Log.e("resize", "error");
+        }
 
         // Decode the image file into a Bitmap sized to fill the View
         bmOptions.inJustDecodeBounds = false;
         bmOptions.inSampleSize = scaleFactor;
         bmOptions.inPurgeable = true;
 
-        Bitmap bitmap = BitmapFactory.decodeFile(imagePath, bmOptions);
-        return bitmap;
+        return BitmapFactory.decodeFile(imagePath, bmOptions);
     }
 
     public interface TextWatcherValidator {
-        boolean validate(String string);
+        boolean isValid(String string);
     }
 
     public static class GenericTextWatcher implements TextWatcher {
@@ -154,7 +156,7 @@ public class Utilities {
         private final TextWatcherValidator validator;
 
         public GenericTextWatcher(@NonNull EditText textField, @NonNull String errorMessage,
-                                  @NonNull TextWatcherValidator validator){
+                                  @NonNull TextWatcherValidator validator) {
             this.textField = textField;
             this.errorMessage = errorMessage;
             this.validator = validator;
@@ -162,17 +164,15 @@ public class Utilities {
 
         @Override
         public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
         }
 
         @Override
         public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
         }
 
         @Override
         public void afterTextChanged(Editable editable) {
-            if (!validator.validate(editable.toString())) {
+            if (!validator.isValid(editable.toString())) {
                 textField.setError(errorMessage);
             }
         }

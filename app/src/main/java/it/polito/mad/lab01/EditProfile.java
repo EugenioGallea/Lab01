@@ -1,6 +1,5 @@
 package it.polito.mad.lab01;
 
-import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -10,12 +9,12 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.InputFilter;
+import android.text.LoginFilter;
 import android.util.Patterns;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -31,7 +30,6 @@ public class EditProfile extends AppCompatActivity {
 
     private static final String ORIGINAL_PROFILE_KEY = "original_profile";
     private static final String CURRENT_PROFILE_KEY = "current_profile";
-    private static final String IMAGE_URI_KEY = "image_uri";
     private static final String IMAGE_CHANGED_KEY = "image_changed";
     private static final String IMAGE_PATH = "profile_pic";
     private static final String IMAGE_PATH_TMP = "profile_pic_tmp";
@@ -43,7 +41,6 @@ public class EditProfile extends AppCompatActivity {
     private EditText email, username, location, biography;
     private ImageView imageView;
     private BottomSheetDialog bottomSheetDialog;
-    //private Uri tmpImageUri;
     private boolean imageChanged;
     private UserProfile originalProfile, currentProfile;
 
@@ -96,19 +93,14 @@ public class EditProfile extends AppCompatActivity {
             });
 
             gallery.setOnClickListener(v2 -> {
-                if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSIONS_REQUEST_EXTERNAL_STORAGE);
-                } else {
-                    galleryLoadPicture();
-                }
-
+                galleryLoadPicture();
                 bottomSheetDialog.dismiss();
             });
 
             reset.setOnClickListener(v3 -> {
                 this.imageChanged = false;
                 currentProfile.update(null);
-                imageView.setImageBitmap(currentProfile.getImageBitmapOrDefault(this, imageView.getMaxWidth(), imageView.getMaxHeight(), getContentResolver()));
+                imageView.setImageBitmap(currentProfile.getImageBitmapOrDefault(this, imageView.getWidth(), imageView.getHeight()));
                 bottomSheetDialog.dismiss();
             });
 
@@ -118,6 +110,8 @@ public class EditProfile extends AppCompatActivity {
         username.addTextChangedListener(
                 new Utilities.GenericTextWatcher(username, getString(R.string.invalid_username),
                         string -> !Utilities.isNullOrWhitespace(string)));
+
+        username.setFilters(new InputFilter[]{new LoginFilter.UsernameFilterGeneric()});
 
         email.addTextChangedListener(
                 new Utilities.GenericTextWatcher(email, getString(R.string.invalid_email),
@@ -217,12 +211,12 @@ public class EditProfile extends AppCompatActivity {
                 case CAMERA:
 
                     File imageFileCamera = new File(this.getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES), IMAGE_PATH_TMP);
-                    Uri imageUriCamera = Uri.fromFile(imageFileCamera);
 
-                    currentProfile.update(imageUriCamera);
-                    imageView.setImageBitmap(currentProfile.getImageBitmapOrDefault(this, imageView.getMaxWidth(), imageView.getMaxHeight(), getContentResolver()));
-
-                    this.imageChanged = true;
+                    if (imageFileCamera.exists()) {
+                        currentProfile.update(imageFileCamera.getAbsolutePath());
+                        imageView.setImageBitmap(currentProfile.getImageBitmapOrDefault(this, imageView.getWidth(), imageView.getHeight()));
+                        this.imageChanged = true;
+                    }
                     break;
 
                 case GALLERY:
@@ -236,10 +230,8 @@ public class EditProfile extends AppCompatActivity {
                             showErrorMessage(getString(R.string.failed_obtain_picture));
                         }
 
-                        Uri imageUriGallery = Uri.fromFile(imageFileGallery);
-
-                        currentProfile.update(imageUriGallery);
-                        imageView.setImageBitmap(currentProfile.getImageBitmapOrDefault(this, imageView.getMaxWidth(), imageView.getMaxHeight(), getContentResolver()));
+                        currentProfile.update(imageFileGallery.getAbsolutePath());
+                        imageView.setImageBitmap(currentProfile.getImageBitmapOrDefault(this, imageView.getWidth(), imageView.getHeight()));
 
                         this.imageChanged = true;
                     }
@@ -277,7 +269,7 @@ public class EditProfile extends AppCompatActivity {
         location.setText(profile.getLocation());
         biography.setText(profile.getBiography());
 
-        imageView.setImageBitmap(profile.getImageBitmapOrDefault(this, imageView.getMaxWidth(), imageView.getMaxHeight(), getContentResolver()));
+        imageView.setImageBitmap(profile.getImageBitmapOrDefault(this, imageView.getWidth(), imageView.getHeight()));
     }
 
     private void updateProfileInfo(UserProfile profile) {
@@ -303,17 +295,19 @@ public class EditProfile extends AppCompatActivity {
         }
 
         // Save the image permanently
-        if (this.imageChanged) {
-            File sourceFile = new File(this.getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES), IMAGE_PATH_TMP);
+        if (this.imageChanged && currentProfile.getImagePath() != null) {
+            File sourceFile = new File(currentProfile.getImagePath());
             File destinationFile = new File(this.getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES), IMAGE_PATH);
             if (!sourceFile.renameTo(destinationFile)) {
                 showErrorMessage(getString(R.string.failed_obtain_picture));
                 return false;
             }
-            currentProfile.update(Uri.fromFile(destinationFile));
+            currentProfile.update(destinationFile.getAbsolutePath());
         }
 
         if (!originalProfile.equals(currentProfile) || this.imageChanged) {
+            currentProfile.trimFields();
+
             Intent intent = new Intent(getApplicationContext(), ShowProfile.class);
             intent.putExtra(UserProfile.PROFILE_INFO_KEY, currentProfile);
             setResult(RESULT_OK, intent);

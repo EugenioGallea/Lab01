@@ -35,4 +35,5 @@
     <string name="failed_obtain_picture">Si è verificato un errore durante l\'ottenimento dell\'immagine</string>
 
     <string name="number_zero">0</string>
+    <string name="alpha_space_characters">abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ</string>
 </resources>

@@ -147,6 +147,7 @@
                             android:id="@+id/ep_input_location"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:digits="@string/alpha_space_characters"
                             android:hint="@string/hint_location"
                             android:maxLength="@integer/max_length_location"
                             android:textSize="@dimen/material_text_subhead" />
