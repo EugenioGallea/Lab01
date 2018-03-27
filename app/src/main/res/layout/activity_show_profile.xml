@@ -14,7 +14,7 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/colorPrimary"
-            android:elevation="6dp"
+            android:elevation="4dp"
             android:theme="@style/ThemeOverlay.AppCompat.Dark"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Dark" />
 
@@ -43,6 +43,7 @@
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
                 android:layout_weight="1"
@@ -74,30 +75,30 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
+                android:layout_gravity="center|center_vertical"
                 android:orientation="vertical">
 
                 <android.support.v7.widget.AppCompatImageButton
                     android:id="@+id/sp_mail_icon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:backgroundTint="@color/colorPrimary"
                     android:contentDescription="@string/send_email"
-                    android:elevation="6dp"
-                    android:padding="8dp"
+                    android:elevation="4dp"
+                    android:padding="12dp"
                     android:src="@drawable/ic_email_black_24dp"
-                    android:tint="@color/colorIcon" />
+                    android:tint="@color/colorIcon"
+                    app:backgroundTint="@color/colorPrimary" />
 
                 <android.support.v7.widget.AppCompatImageButton
                     android:id="@+id/sp_locate_icon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:backgroundTint="@color/colorPrimary"
                     android:contentDescription="@string/show_location"
-                    android:elevation="6dp"
-                    android:padding="8dp"
+                    android:elevation="4dp"
+                    android:padding="12dp"
                     android:src="@drawable/ic_location_on_black_24dp"
-                    android:tint="@color/colorIcon" />
+                    android:tint="@color/colorIcon"
+                    app:backgroundTint="@color/colorPrimary" />
             </LinearLayout>
         </LinearLayout>
 

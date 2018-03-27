@@ -27,12 +27,11 @@
 
     <string name="invalid_username">Username must not be empty</string>
     <string name="invalid_email">Invalid e-mail format</string>
-    <string name="invalid_location">Location must not be empty</string>
+    <string name="invalid_location_wrong">Location can contain only alphabetic characters</string>
+    <string name="invalid_location_empty">Location must not be empty</string>
     <string name="discard_changes">Discard changes?</string>
-    <string name="incorrect_values">Some fields are empty.\nPlease, fill them</string>
-    <string name="incorrect_email">E-mail address is invalid.\nPlease, change it</string>
+    <string name="incorrect_values">Some fields contain invalid data.\nPlease, check them</string>
     <string name="failed_obtain_picture">Something went wrong while obtaining the picture</string>
 
     <string name="number_zero">0</string>
-    <string name="alpha_space_characters">abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ</string>
 </resources>

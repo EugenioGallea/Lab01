@@ -1,5 +1,6 @@
 package it.polito.mad.lab01;
 
+import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -9,12 +10,12 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.InputFilter;
-import android.text.LoginFilter;
 import android.util.Patterns;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -93,7 +94,12 @@ public class EditProfile extends AppCompatActivity {
             });
 
             gallery.setOnClickListener(v2 -> {
-                galleryLoadPicture();
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSIONS_REQUEST_EXTERNAL_STORAGE);
+                } else {
+                    galleryLoadPicture();
+                }
+
                 bottomSheetDialog.dismiss();
             });
 
@@ -111,15 +117,16 @@ public class EditProfile extends AppCompatActivity {
                 new Utilities.GenericTextWatcher(username, getString(R.string.invalid_username),
                         string -> !Utilities.isNullOrWhitespace(string)));
 
-        username.setFilters(new InputFilter[]{new LoginFilter.UsernameFilterGeneric()});
-
         email.addTextChangedListener(
                 new Utilities.GenericTextWatcher(email, getString(R.string.invalid_email),
                         string -> Patterns.EMAIL_ADDRESS.matcher(string).matches()));
 
         location.addTextChangedListener(
-                new Utilities.GenericTextWatcher(location, getString(R.string.invalid_location),
-                        string -> !Utilities.isNullOrWhitespace(string)));
+                new Utilities.GenericTextWatcherEmptyOrInvalid(location,
+                        getString(R.string.invalid_location_empty),
+                        getString(R.string.invalid_location_wrong),
+                        string -> !Utilities.isNullOrWhitespace(string),
+                        string -> Utilities.isValidLocation(string)));
     }
 
     @Override
@@ -269,7 +276,9 @@ public class EditProfile extends AppCompatActivity {
         location.setText(profile.getLocation());
         biography.setText(profile.getBiography());
 
-        imageView.setImageBitmap(profile.getImageBitmapOrDefault(this, imageView.getWidth(), imageView.getHeight()));
+        imageView.post(() -> {
+            imageView.setImageBitmap(profile.getImageBitmapOrDefault(this, imageView.getWidth(), imageView.getHeight()));
+        });
     }
 
     private void updateProfileInfo(UserProfile profile) {
@@ -284,13 +293,8 @@ public class EditProfile extends AppCompatActivity {
     private boolean commitChanges() {
         updateProfileInfo(currentProfile);
 
-        if(!currentProfile.isValid()) {
+        if (!currentProfile.isValid()) {
             showErrorMessage(getString(R.string.incorrect_values));
-            return false;
-        }
-
-        if(!currentProfile.isEmailValid()) {
-            showErrorMessage(getString(R.string.incorrect_email));
             return false;
         }
 

@@ -8,9 +8,9 @@ import android.util.Patterns;
 
 import java.io.Serializable;
 
-public class UserProfile implements Serializable {
+class UserProfile implements Serializable {
 
-    public static final String PROFILE_INFO_KEY = "profile_info_key";
+    static final String PROFILE_INFO_KEY = "profile_info_key";
     private static final String EMAIL_PREFERENCE_KEY = "email";
     private static final String USERNAME_PREFERENCE_KEY = "username";
     private static final String LOCATION_PREFERENCE_KEY = "location";
@@ -28,7 +28,7 @@ public class UserProfile implements Serializable {
     private int borrowedBooks;
     private int toBeReturnedBooks;
 
-    public UserProfile(@NonNull UserProfile other) {
+    UserProfile(@NonNull UserProfile other) {
         this.email = other.getEmail();
         this.username = other.getUsername();
         this.location = other.getLocation();
@@ -42,7 +42,7 @@ public class UserProfile implements Serializable {
         this.toBeReturnedBooks = other.getToBeReturnedBooks();
     }
 
-    public UserProfile(@NonNull Context ctx, @NonNull String id, @NonNull SharedPreferences sharedPref) {
+    UserProfile(@NonNull Context ctx, @NonNull String id, @NonNull SharedPreferences sharedPref) {
 
         this.email = sharedPref.getString(id + "_" + EMAIL_PREFERENCE_KEY, ctx.getString(R.string.default_email));
         this.username = sharedPref.getString(id + "_" + USERNAME_PREFERENCE_KEY, ctx.getString(R.string.default_username));
@@ -58,25 +58,27 @@ public class UserProfile implements Serializable {
         this.toBeReturnedBooks = 2;
     }
 
-    public void update(@NonNull String email, @NonNull String username, @NonNull String location, @NonNull String biography) {
+    void update(@NonNull String email, @NonNull String username, @NonNull String location, @NonNull String biography) {
         this.email = email;
         this.username = username;
         this.location = location;
         this.biography = biography;
     }
 
-    public void update(String imagePath) {
+    void update(String imagePath) {
         this.imagePath = imagePath;
     }
 
-    public void trimFields() {
+    void trimFields() {
         this.username = this.username.trim();
-        this.email = this.email.trim();
         this.location = this.location.trim();
         this.biography = this.biography.trim();
+        this.username = this.username.replaceAll("[ ]+", " ");
+        this.location = this.location.replaceAll("[ ]+", " ");
+        this.biography = this.biography.replaceAll("[ ]+", " ");
     }
 
-    public void save(@NonNull String id, @NonNull SharedPreferences.Editor sharedPrefEditor) {
+    void save(@NonNull String id, @NonNull SharedPreferences.Editor sharedPrefEditor) {
         sharedPrefEditor.putString(id + "_" + EMAIL_PREFERENCE_KEY, this.getEmail());
         sharedPrefEditor.putString(id + "_" + USERNAME_PREFERENCE_KEY, this.getUsername());
         sharedPrefEditor.putString(id + "_" + LOCATION_PREFERENCE_KEY, this.getLocation());
@@ -86,53 +88,50 @@ public class UserProfile implements Serializable {
         }
     }
 
-    public boolean isValid() {
-        return !Utilities.isNullOrWhitespace(email) &&
+    boolean isValid() {
+        return Patterns.EMAIL_ADDRESS.matcher(email).matches() &&
                 !Utilities.isNullOrWhitespace(username) &&
-                !Utilities.isNullOrWhitespace(location);
+                !Utilities.isNullOrWhitespace(location) &&
+                Utilities.isValidLocation(location);
     }
 
-    public boolean isEmailValid() {
-        return Patterns.EMAIL_ADDRESS.matcher(email).matches();
-    }
-
-    public String getEmail() {
+    String getEmail() {
         return this.email;
     }
 
-    public String getUsername() {
+    String getUsername() {
         return this.username;
     }
 
-    public String getLocation() {
+    String getLocation() {
         return this.location;
     }
 
-    public String getBiography() {
+    String getBiography() {
         return this.biography;
     }
 
-    public String getImagePath() {
+    String getImagePath() {
         return this.imagePath;
     }
 
-    public Bitmap getImageBitmapOrDefault(@NonNull Context ctx, int targetWidth, int targetHeight) {
+    Bitmap getImageBitmapOrDefault(@NonNull Context ctx, int targetWidth, int targetHeight) {
         return Utilities.loadImage(this.imagePath, targetWidth, targetHeight, ctx.getResources(), R.drawable.default_header);
     }
 
-    public float getRating() {
+    float getRating() {
         return this.rating;
     }
 
-    public int getLentBooks() {
+    int getLentBooks() {
         return this.lentBooks;
     }
 
-    public int getBorrowedBooks() {
+    int getBorrowedBooks() {
         return this.borrowedBooks;
     }
 
-    public int getToBeReturnedBooks() {
+    int getToBeReturnedBooks() {
         return this.toBeReturnedBooks;
     }
 
@@ -147,14 +146,19 @@ public class UserProfile implements Serializable {
         }
 
         UserProfile otherUP = (UserProfile) other;
+
+        String thisImagePath = this.imagePath;
+        String otherImagePath = otherUP.imagePath;
+
         return this.getEmail().equals(otherUP.getEmail()) &&
                 this.getUsername().equals(otherUP.getUsername()) &&
                 this.getLocation().equals(otherUP.getLocation()) &&
                 this.getBiography().equals(otherUP.getBiography()) &&
-                this.getImagePath() == otherUP.getImagePath() &&
                 Float.compare(this.getRating(), otherUP.getRating()) == 0 &&
                 this.getLentBooks() == otherUP.getLentBooks() &&
                 this.getBorrowedBooks() == otherUP.getBorrowedBooks() &&
-                this.getToBeReturnedBooks() == otherUP.getToBeReturnedBooks();
+                this.getToBeReturnedBooks() == otherUP.getToBeReturnedBooks() &&
+                (thisImagePath == null && otherImagePath == null ||
+                        thisImagePath != null && thisImagePath.equals(otherImagePath));
     }
 }

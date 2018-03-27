@@ -1,8 +1,6 @@
 package it.polito.mad.lab01;
 
 import android.app.Activity;
-import android.content.ContentResolver;
-import android.content.Context;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -10,12 +8,10 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
-import android.support.annotation.AnyRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.widget.EditText;
 
 import java.io.File;
@@ -27,16 +23,13 @@ import java.nio.channels.FileChannel;
 import static android.provider.MediaStore.Images.Media.DATA;
 import static android.provider.MediaStore.Video;
 
-public class Utilities {
+class Utilities {
 
-    public static Uri getUriToDrawable(@NonNull Context context, @AnyRes int drawableId) {
-        return Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE +
-                "://" + context.getResources().getResourcePackageName(drawableId)
-                + '/' + context.getResources().getResourceTypeName(drawableId)
-                + '/' + context.getResources().getResourceEntryName(drawableId));
+    static boolean isValidLocation(String s) {
+        return s != null && s.matches("(\\p{L}|[ ])+");
     }
 
-    public static boolean isNullOrWhitespace(String s) {
+    static boolean isNullOrWhitespace(String s) {
         if (s == null)
             return true;
 
@@ -48,15 +41,13 @@ public class Utilities {
         return true;
     }
 
-    public static void copyFile(File sourceFile, File destFile) throws IOException {
+    static void copyFile(File sourceFile, File destFile) throws IOException {
         if (!sourceFile.exists()) {
             return;
         }
 
-        FileChannel source = null;
-        FileChannel destination = null;
-        source = new FileInputStream(sourceFile).getChannel();
-        destination = new FileOutputStream(destFile).getChannel();
+        FileChannel source = new FileInputStream(sourceFile).getChannel();
+        FileChannel destination = new FileOutputStream(destFile).getChannel();
 
         if (source != null) {
             destination.transferFrom(source, 0, source.size());
@@ -66,7 +57,7 @@ public class Utilities {
         destination.close();
     }
 
-    public static String getRealPathFromURI(@NonNull Activity activity, @NonNull Uri contentUri) {
+    static String getRealPathFromURI(@NonNull Activity activity, @NonNull Uri contentUri) {
         String[] proj = {Video.Media.DATA};
         Cursor cursor = activity.managedQuery(contentUri, proj, null, null, null);
         int column_index = cursor.getColumnIndexOrThrow(DATA);
@@ -81,8 +72,8 @@ public class Utilities {
                 matrix, true);
     }
 
-    public static Bitmap loadImage(String imagePath, int targetWidth, int targetHeight,
-                                   @NonNull Resources resources, @DrawableRes int defaultDrawable) {
+    static Bitmap loadImage(String imagePath, int targetWidth, int targetHeight,
+                            @NonNull Resources resources, @DrawableRes int defaultDrawable) {
         ExifInterface ei = null;
         Bitmap bitmap = null;
 
@@ -120,7 +111,7 @@ public class Utilities {
         }
     }
 
-    public static Bitmap getImage(String imagePath, int targetWidth, int targetHeight) {
+    private static Bitmap getImage(String imagePath, int targetWidth, int targetHeight) {
 
         // Get the dimensions of the bitmap
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
@@ -133,8 +124,6 @@ public class Utilities {
         int scaleFactor = 0;
         if (targetWidth != 0 && targetHeight != 0) {
             scaleFactor = Math.min(photoW / targetWidth, photoH / targetHeight);
-        } else {
-            Log.e("resize", "error");
         }
 
         // Decode the image file into a Bitmap sized to fill the View
@@ -145,18 +134,18 @@ public class Utilities {
         return BitmapFactory.decodeFile(imagePath, bmOptions);
     }
 
-    public interface TextWatcherValidator {
+    interface TextWatcherValidator {
         boolean isValid(String string);
     }
 
-    public static class GenericTextWatcher implements TextWatcher {
+    static class GenericTextWatcher implements TextWatcher {
 
         private final EditText textField;
         private final String errorMessage;
         private final TextWatcherValidator validator;
 
-        public GenericTextWatcher(@NonNull EditText textField, @NonNull String errorMessage,
-                                  @NonNull TextWatcherValidator validator) {
+        GenericTextWatcher(@NonNull EditText textField, @NonNull String errorMessage,
+                           @NonNull TextWatcherValidator validator) {
             this.textField = textField;
             this.errorMessage = errorMessage;
             this.validator = validator;
@@ -174,6 +163,40 @@ public class Utilities {
         public void afterTextChanged(Editable editable) {
             if (!validator.isValid(editable.toString())) {
                 textField.setError(errorMessage);
+            }
+        }
+    }
+
+    static class GenericTextWatcherEmptyOrInvalid implements TextWatcher {
+
+        private final EditText textField;
+        private final String emptyErrorMessage, wrongErrorMessage;
+        private final TextWatcherValidator emptyInputValidator, wrongInputValidator;
+
+        GenericTextWatcherEmptyOrInvalid(@NonNull EditText textField, @NonNull String emptyErrorMessage, @NonNull String wrongErrorMessage,
+                                         @NonNull TextWatcherValidator emptyInputValidator, @NonNull TextWatcherValidator wrongInputValidator) {
+            this.textField = textField;
+            this.emptyErrorMessage = emptyErrorMessage;
+            this.wrongErrorMessage = wrongErrorMessage;
+            this.emptyInputValidator = emptyInputValidator;
+            this.wrongInputValidator = wrongInputValidator;
+        }
+
+        @Override
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        }
+
+        @Override
+        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        }
+
+        @Override
+        public void afterTextChanged(Editable editable) {
+
+            if (!emptyInputValidator.isValid(editable.toString())) {
+                textField.setError(emptyErrorMessage);
+            } else if (!wrongInputValidator.isValid(editable.toString())) {
+                textField.setError(wrongErrorMessage);
             }
         }
     }

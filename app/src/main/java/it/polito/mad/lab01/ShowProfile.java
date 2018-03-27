@@ -133,7 +133,9 @@ public class ShowProfile extends AppCompatActivity {
         location.setText(profile.getLocation());
         biography.setText(profile.getBiography());
 
-        image.setImageBitmap(profile.getImageBitmapOrDefault(this, image.getWidth(), image.getHeight()));
+        image.post(() -> {
+            image.setImageBitmap(profile.getImageBitmapOrDefault(this, image.getWidth(), image.getHeight()));
+        });
 
         rating.setRating(profile.getRating());
 
