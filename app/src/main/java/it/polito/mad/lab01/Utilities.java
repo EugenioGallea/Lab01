@@ -26,7 +26,7 @@ import static android.provider.MediaStore.Video;
 class Utilities {
 
     static boolean isValidLocation(String s) {
-        return s != null && s.matches("(\\p{L}|[ ])+");
+        return s != null && s.matches("((\\p{L}\\p{M}*)|\\p{Zs})+");
     }
 
     static boolean isNullOrWhitespace(String s) {
@@ -80,7 +80,6 @@ class Utilities {
         if (imagePath != null) {
             try {
                 bitmap = Utilities.getImage(imagePath, targetWidth, targetHeight);
-                //bitmap = BitmapFactory.decodeFile(imagePath);
                 ei = new ExifInterface(imagePath);
             } catch (IOException e) {
                 bitmap = null;

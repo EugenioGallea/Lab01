@@ -73,9 +73,9 @@ class UserProfile implements Serializable {
         this.username = this.username.trim();
         this.location = this.location.trim();
         this.biography = this.biography.trim();
-        this.username = this.username.replaceAll("[ ]+", " ");
-        this.location = this.location.replaceAll("[ ]+", " ");
-        this.biography = this.biography.replaceAll("[ ]+", " ");
+        this.username = this.username.replaceAll("\\p{Zs}+", " ");
+        this.location = this.location.replaceAll("\\p{Zs}+", " ");
+        this.biography = this.biography.replaceAll("\\p{Zs}+", " ");
     }
 
     void save(@NonNull String id, @NonNull SharedPreferences.Editor sharedPrefEditor) {

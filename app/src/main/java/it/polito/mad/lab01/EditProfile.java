@@ -276,9 +276,9 @@ public class EditProfile extends AppCompatActivity {
         location.setText(profile.getLocation());
         biography.setText(profile.getBiography());
 
-        imageView.post(() -> {
-            imageView.setImageBitmap(profile.getImageBitmapOrDefault(this, imageView.getWidth(), imageView.getHeight()));
-        });
+        imageView.post(() ->
+                imageView.setImageBitmap(profile.getImageBitmapOrDefault(this, imageView.getWidth(), imageView.getHeight()))
+        );
     }
 
     private void updateProfileInfo(UserProfile profile) {

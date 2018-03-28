@@ -32,7 +32,9 @@ public class ShowProfile extends AppCompatActivity {
         if (savedInstanceState != null) {
             // If the profile was saved, load it
             profile = (UserProfile) savedInstanceState.getSerializable(USER_PROFILE_KEY);
-        } else {
+        }
+
+        if (profile == null) {
             // Otherwise, since now no backend server exists, it is loaded either from shared preferences or
             // using default values; read-only data are set to default values anyway.
             profile = new UserProfile(this, PROFILE_ID, this.getPreferences(Context.MODE_PRIVATE));
@@ -133,9 +135,9 @@ public class ShowProfile extends AppCompatActivity {
         location.setText(profile.getLocation());
         biography.setText(profile.getBiography());
 
-        image.post(() -> {
-            image.setImageBitmap(profile.getImageBitmapOrDefault(this, image.getWidth(), image.getHeight()));
-        });
+        image.post(() ->
+                image.setImageBitmap(profile.getImageBitmapOrDefault(this, image.getWidth(), image.getHeight()))
+        );
 
         rating.setRating(profile.getRating());
 
